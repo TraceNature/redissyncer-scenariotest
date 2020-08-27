@@ -25,6 +25,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="00e8ce5a-d0f4-4960-8d52-83857acd3cd8" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cases/basecase.go" beforeDir="false" afterPath="$PROJECT_DIR$/cases/basecase.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
