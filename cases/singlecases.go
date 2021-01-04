@@ -199,7 +199,7 @@ func (tc TestCase) Single2SingleWithDBMap() {
 	logger.Sugar().Info("Clean Task beging...")
 	synctaskhandle.RemoveTaskByName(tc.SyncServer, taskname)
 	logger.Sugar().Info("Clean Task end")
-	
+
 	//生成垫底数据
 	for k, _ := range dbmap {
 		db, err := strconv.Atoi(k)

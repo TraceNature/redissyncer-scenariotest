@@ -27,6 +27,7 @@
     <list default="true" id="00e8ce5a-d0f4-4960-8d52-83857acd3cd8" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cases/basecase.go" beforeDir="false" afterPath="$PROJECT_DIR$/cases/basecase.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cases/singlecases.go" beforeDir="false" afterPath="$PROJECT_DIR$/cases/singlecases.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,6 +47,9 @@
   </component>
   <component name="GoLibraries">
     <option name="indexEntireGoPath" value="false" />
+  </component>
+  <component name="MacroExpansionManager">
+    <option name="directoryName" value="0zirofy2" />
   </component>
   <component name="ProjectId" id="1Zec1FlDTGz3lnVjX8MTcXlUzOQ" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -74,8 +78,9 @@
       <recent name="$PROJECT_DIR$/compare" />
     </key>
   </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TypeScriptGeneratedFilesManager">
-    <option name="version" value="2" />
+    <option name="version" value="3" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
