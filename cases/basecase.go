@@ -225,13 +225,14 @@ func (tc *TestCase) CheckSyncTaskStatus(taskids []string) {
 			}
 
 			if gjson.Get(v, "status").String() == "STOP" {
-				time.Sleep(30 * time.Second)
+				time.Sleep(60 * time.Second)
 			}
 		}
 
 		if iscommandrunning {
-			break
+			time.Sleep(3 * time.Second)
+			return
 		}
-		time.Sleep(3 * time.Second)
+
 	}
 }
