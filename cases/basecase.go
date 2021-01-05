@@ -215,7 +215,7 @@ func (tc *TestCase) CheckSyncTaskStatus(taskids []string) {
 				}
 			}
 
-			if gjson.Get(v, "status").String() == "RDBRUNING" || gjson.Get(v, "status").String() == "RUN" || gjson.Get(v, "status").String() == "CREATED" {
+			if gjson.Get(v, "status").String() == "RDBRUNING" || gjson.Get(v, "status").String() == "RUN" || gjson.Get(v, "status").String() == "CREATED" || gjson.Get(v, "status").String() == "CREATING" {
 				iscommandrunning = false
 			}
 
