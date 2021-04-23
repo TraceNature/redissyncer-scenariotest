@@ -14,11 +14,11 @@ import (
 
 var logger = globalzap.GetLogger()
 
-const CreateTaskPath = "/api/v2/createtask"
-const StartTaskPath = "/api/v2/starttask"
-const StopTaskPath = "/api/v2/stoptask"
-const RemoveTaskPath = "/api/v2/removetask"
-const ListTasksPath = "/api/v2/listtasks"
+const CreateTaskPath = "/api/task/create"
+const StartTaskPath = "/api/task/start"
+const StopTaskPath = "/api/task/stop"
+const RemoveTaskPath = "/api/task/remove"
+const ListTasksPath = "/api/task/listtasks"
 const ImportFilePath = "/api/v2/file/createtask"
 
 type Request struct {

@@ -1,4 +1,4 @@
-syncserver:   "http://114.67.127.196:8080"
+syncserver: "http://127.0.0.1:8880"
 createtaskfile: "./tasks/single2single.json"
 gendataduration: 60
 datageninterval: 20
