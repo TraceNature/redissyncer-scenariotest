@@ -1,13 +1,13 @@
 package globalzap
 
 import (
-	"testcase/commons"
 	"fmt"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
 	"os"
 	"sync"
+	"testcase/commons"
 )
 
 var (
@@ -48,6 +48,7 @@ var defaultloggerdefine = &LoggerDefine{
 		MaxBackups: 30,                       // 日志文件最多保存多少个备份
 		MaxAge:     7,                        // 文件最多保存多少天
 		Compress:   true,                     // 是否压缩
+		//DisableStacktrace: false,
 	},
 	EncoderConfig: zapcore.EncoderConfig{
 		TimeKey:        "time",

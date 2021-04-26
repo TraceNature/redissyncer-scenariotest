@@ -3,6 +3,7 @@ package synctaskhandle
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/tidwall/gjson"
 	"go.uber.org/zap"
 	"io/ioutil"
@@ -19,6 +20,8 @@ const StartTaskPath = "/api/task/start"
 const StopTaskPath = "/api/task/stop"
 const RemoveTaskPath = "/api/task/remove"
 const ListTasksPath = "/api/task/listtasks"
+const TaskListByIDs = "/api/task/listbyids"
+const TaskListByName = "/api/task/listbynames"
 const ImportFilePath = "/api/v2/file/createtask"
 
 type Request struct {
@@ -54,7 +57,10 @@ func (r Request) ExecRequest() (result string) {
 	}
 	var dat map[string]interface{}
 	json.Unmarshal(body, &dat)
-	bodystr, _ := json.MarshalIndent(dat, "", " ")
+	bodystr, jsonerr := json.MarshalIndent(dat, "", " ")
+	if jsonerr != nil {
+		logger.Sugar().Error(err)
+	}
 	return string(bodystr)
 }
 
@@ -67,7 +73,9 @@ func Import(syncserver string, createjson string) []string {
 	}
 
 	resp := importreq.ExecRequest()
+
 	taskids := gjson.Get(resp, "data").Array()
+
 	if len(taskids) == 0 {
 		logger.Error("task create faile", zap.Any("response_info", resp))
 		os.Exit(1)
@@ -90,8 +98,10 @@ func CreateTask(syncserver string, createjson string) []string {
 		Body:   createjson,
 	}
 
+	fmt.Println(createjson)
 	resp := createreq.ExecRequest()
 	taskids := gjson.Get(resp, "data").Array()
+
 	if len(taskids) == 0 {
 		logger.Sugar().Error(errors.New("task create faile \n"), resp)
 		//logger.Sugar().Info(resp)
@@ -148,7 +158,7 @@ func StopTaskByIds(syncserver string, ids []string) {
 func RemoveTaskByName(syncserver string, taskname string) {
 	jsonmap := make(map[string]interface{})
 
-	taskids, err := GetSameTaskNameIds(syncserver, taskname)
+	taskids, err := GetSameTaskNameIDs(syncserver, taskname)
 	if err != nil {
 		logger.Sugar().Error(err)
 		os.Exit(1)
@@ -158,26 +168,27 @@ func RemoveTaskByName(syncserver string, taskname string) {
 		return
 	}
 
-	jsonmap["taskids"] = taskids
-	stopjsonStr, err := json.Marshal(jsonmap)
-	if err != nil {
-		logger.Sugar().Error(err)
-		os.Exit(1)
-	}
-	stopreq := &Request{
-		Server: syncserver,
-		Api:    StopTaskPath,
-		Body:   string(stopjsonStr),
-	}
-	stopreq.ExecRequest()
+	for _, id := range taskids {
+		jsonmap["taskId"] = id
+		stopjsonStr, err := json.Marshal(jsonmap)
+		if err != nil {
+			logger.Sugar().Error(err)
+			os.Exit(1)
+		}
+		stopreq := &Request{
+			Server: syncserver,
+			Api:    StopTaskPath,
+			Body:   string(stopjsonStr),
+		}
+		stopreq.ExecRequest()
+		removereq := &Request{
+			Server: syncserver,
+			Api:    RemoveTaskPath,
+			Body:   string(stopjsonStr),
+		}
 
-	removereq := &Request{
-		Server: syncserver,
-		Api:    RemoveTaskPath,
-		Body:   string(stopjsonStr),
+		removereq.ExecRequest()
 	}
-
-	removereq.ExecRequest()
 
 }
 
@@ -185,8 +196,8 @@ func RemoveTaskByName(syncserver string, taskname string) {
 func GetTaskStatus(syncserver string, ids []string) (map[string]string, error) {
 	jsonmap := make(map[string]interface{})
 
-	jsonmap["regulation"] = "byids"
-	jsonmap["taskids"] = ids
+	//jsonmap["regulation"] = "byids"
+	jsonmap["taskIDs"] = ids
 
 	listtaskjsonStr, err := json.Marshal(jsonmap)
 	if err != nil {
@@ -194,11 +205,12 @@ func GetTaskStatus(syncserver string, ids []string) (map[string]string, error) {
 	}
 	listreq := &Request{
 		Server: syncserver,
-		Api:    ListTasksPath,
+		Api:    TaskListByIDs,
 		Body:   string(listtaskjsonStr),
 	}
 	listresp := listreq.ExecRequest()
-	taskarray := gjson.Get(listresp, "data").Array()
+
+	taskarray := gjson.Get(listresp, "result").Array()
 
 	if len(taskarray) == 0 {
 		return nil, errors.New("No status return")
@@ -215,18 +227,18 @@ func GetTaskStatus(syncserver string, ids []string) (map[string]string, error) {
 	return statusmap, nil
 }
 
-// @title    GetSameTaskNameIds
+// @title    GetSameTaskNameIDs
 // @description   获取同名任务列表
 // @auth      Jsw             时间（2020/7/1   10:57 ）
 // @param     syncserver        string         "redissyncer ip:port"
 // @param    taskname        string         "任务名称"
 // @return    taskids        []string         "任务id数组"
-func GetSameTaskNameIds(syncserver string, taskname string) ([]string, error) {
+func GetSameTaskNameIDs(syncserver string, taskname string) ([]string, error) {
 
 	existstaskids := []string{}
 	listjsonmap := make(map[string]interface{})
-	listjsonmap["regulation"] = "bynames"
-	listjsonmap["tasknames"] = strings.Split(taskname, ",")
+	//listjsonmap["regulation"] = "bynames"
+	listjsonmap["taskNames"] = strings.Split(taskname, ",")
 	listjsonStr, err := json.Marshal(listjsonmap)
 	if err != nil {
 		logger.Info(err.Error())
@@ -234,17 +246,18 @@ func GetSameTaskNameIds(syncserver string, taskname string) ([]string, error) {
 	}
 	listtaskreq := &Request{
 		Server: syncserver,
-		Api:    ListTasksPath,
+		Api:    TaskListByName,
 		Body:   string(listjsonStr),
 	}
-	listresp := listtaskreq.ExecRequest()
 
-	tasklist := gjson.Get(listresp, "data").Array()
+	listresp := listtaskreq.ExecRequest()
+	tasklist := gjson.Get(listresp, "result").Array()
 
 	if len(tasklist) > 0 {
 		for _, v := range tasklist {
-			existstaskids = append(existstaskids, gjson.Get(v.String(), "taskId").String())
+			existstaskids = append(existstaskids, gjson.Get(v.String(), "taskStatus.taskId").String())
 		}
 	}
+
 	return existstaskids, nil
 }

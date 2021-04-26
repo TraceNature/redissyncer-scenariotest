@@ -1,6 +1,8 @@
 package cases
 
 import (
+	"context"
+	"errors"
 	"github.com/go-redis/redis/v7"
 	"github.com/panjf2000/ants/v2"
 	"github.com/tidwall/gjson"
@@ -12,8 +14,6 @@ import (
 	"testcase/generatedata"
 	"testcase/synctaskhandle"
 	"time"
-	"context"
-	"errors"
 )
 
 //基本测试案例单实例2单实例，无映射关系
