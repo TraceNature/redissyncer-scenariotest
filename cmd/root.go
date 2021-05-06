@@ -25,6 +25,8 @@ import (
 	"go.uber.org/zap"
 	"io/ioutil"
 	"log"
+	"testcase/core"
+	"testcase/global"
 	"testcase/globalzap"
 	"testcase/synctaskhandle"
 
@@ -35,6 +37,7 @@ import (
 
 var cfgFile string
 var logger *zap.Logger
+var Viper *viper.Viper
 
 func init() {
 	logger = globalzap.GetLogger()
@@ -53,48 +56,6 @@ to quickly create a Cobra application.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
-		//	sourceopt := &redis.Options{
-		//		//Addr: "114.67.100.239:6379",
-		//		//Addr:     "10.0.0.10:6379",
-		//		Addr: viper.GetViper().GetString("sourceRedisAddress"),
-		//		//Password: "redistest0102", // no password set
-		//		DB: 0, // use default DB
-		//	}
-		//
-		//	targetopt := &redis.Options{
-		//		//Addr: "114.67.100.239:6379",
-		//		//Addr:     "10.0.0.10:6379",
-		//		Addr: viper.GetViper().GetString("targetRedisAddress"),
-		//		//Password: "redistest0102", // no password set
-		//		DB: 0, // use default DB
-		//	}
-		//	sourceopt.Password = viper.GetViper().GetString("sourcePassword")
-		//	targetopt.Password = viper.GetViper().GetString("targetPassword")
-		//	sourceclient := commons.GetGoRedisClient(sourceopt)
-		//	targetclient := commons.GetGoRedisClient(targetopt)
-		//	defer sourceclient.Close()
-		//	defer targetclient.Close()
-		//
-		//	_, serr := sourceclient.Ping().Result()
-		//	_, terr := targetclient.Ping().Result()
-		//	if serr != nil {
-		//		logger.Error("source error:", serr)
-		//		os.Exit(0)
-		//	}
-		//	if terr != nil {
-		//		logger.Error("target error:", terr)
-		//		os.Exit(0)
-		//	}
-		//
-		//	sourceclient.FlushAll()
-		//	targetclient.FlushAll()
-		//
-		//	generatedata.GenerateBase(sourceclient, int64(100))
-		//
-		//
-		//
-		//	os.Exit(0)
-		//
 
 		execfile := "./tasks/listtasks.json"
 
@@ -132,29 +93,33 @@ func Execute() {
 }
 
 func init() {
+
 	cobra.OnInitialize(initConfig)
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file (default is $HOME/config.yml)")
 	rootCmd.MarkFlagRequired("config")
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+
 }
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
 	if cfgFile != "" {
 		// Use config file from the flag.
-		viper.SetConfigFile(cfgFile)
+		//core.RSPViper.SetConfigFile(cfgFile)
+		global.RSPViper = core.Viper(cfgFile)
 	} else {
 		// Find home directory.
-		viper.AddConfigPath(".")
-		viper.SetConfigName("config.yml")
+		//core.RSPViper.AddConfigPath(".")
+		//core.RSPViper.SetConfigName("config.yml")
+		global.RSPViper = core.Viper()
 	}
 
-	viper.AutomaticEnv() // read in environment variables that match
+	global.RSPViper.AutomaticEnv() // read in environment variables that match
 
 	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
+	if err := global.RSPViper.ReadInConfig(); err == nil {
 		logger.Sugar().Info("Using config file:", viper.ConfigFileUsed())
-		if viper.GetViper().GetBool("logjsonformat") {
+		if global.RSPViper.GetBool("logjsonformat") {
 			logger.Sugar().Info(&logrus.JSONFormatter{})
 		}
 	} else {

@@ -16,22 +16,60 @@ limitations under the License.
 package main
 
 import (
-	"testcase/cmd"
+	"fmt"
+	"io/ioutil"
+	"os"
+	"os/signal"
+	"strings"
+	"syscall"
+	"testcase/interact"
 )
 
-func init() {
-	// Log as JSON instead of the default ASCII formatter.
-
-	//log.SetFormatter(&log.JSONFormatter{})
-	//
-	//// Output to stdout instead of the default stderr
-	//// Can be any io.Writer, see below for File example
-	//log.SetOutput(os.Stdout)
-	//
-	//// Only log the warning severity or above.
-	//log.SetLevel(log.WarnLevel)
-}
+//func init() {
+//
+//}
+//
+//func main() {
+//	cmd.Execute()
+//}
 
 func main() {
-	cmd.Execute()
+
+	//cmd.Execute()
+
+	pdAddr := os.Getenv("PD_ADDR")
+	if pdAddr != "" {
+		os.Args = append(os.Args, "-u", pdAddr)
+	}
+
+	sc := make(chan os.Signal, 1)
+	signal.Notify(sc,
+		syscall.SIGHUP,
+		syscall.SIGINT,
+		syscall.SIGTERM,
+		syscall.SIGQUIT)
+
+	go func() {
+		sig := <-sc
+		fmt.Printf("\nGot signal [%v] to exit.\n", sig)
+		switch sig {
+		case syscall.SIGTERM:
+			os.Exit(0)
+		default:
+			os.Exit(1)
+		}
+	}()
+
+	var input []string
+	stat, _ := os.Stdin.Stat()
+	if (stat.Mode() & os.ModeCharDevice) == 0 {
+		b, err := ioutil.ReadAll(os.Stdin)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		input = strings.Split(strings.TrimSpace(string(b[:])), " ")
+	}
+
+	interact.MainStart(append(os.Args[1:], input...))
 }

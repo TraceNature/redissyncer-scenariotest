@@ -18,6 +18,7 @@ import (
 
 //基本测试案例单实例2单实例，无映射关系
 func (tc *TestCase) Single2Single() {
+
 	createjson := tc.ParseJsonFile(tc.CreateTaskFile)
 	increment_pool, _ := ants.NewPool(tc.Increment_Threads)
 	defer increment_pool.Release()
@@ -134,6 +135,7 @@ func (tc *TestCase) Single2Single() {
 	}
 
 	compare.CompareDB()
+
 }
 
 //Single2SingleWithDBMap,基本测试案例单实例2单实例，有映射关系
@@ -307,4 +309,5 @@ func (tc TestCase) Single2SingleWithDBMap() {
 
 		compare.CompareDB()
 	}
+
 }

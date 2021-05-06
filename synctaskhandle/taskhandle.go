@@ -32,29 +32,31 @@ type Request struct {
 
 func (r Request) ExecRequest() (result string) {
 	client := &http.Client{}
-	req, err := http.NewRequest("POST", r.Server+r.Api, strings.NewReader(r.Body))
+	//req, err := http.NewRequest("POST", r.Server+r.Api, strings.NewReader(r.Body))
+	//
+	//if err != nil {
+	//	logger.Sugar().Error(err)
+	//	os.Exit(1)
+	//}
+	//
+	//req.Header.Set("Content-Type", "application/json")
+	//resp, err := client.Do(req)
+
+	resp, err := client.Post(r.Server+r.Api, "application/json", strings.NewReader(r.Body))
 
 	if err != nil {
 		logger.Sugar().Error(err)
-		os.Exit(1)
 	}
-
-	req.Header.Set("Content-Type", "application/json")
-
-	resp, err := client.Do(req)
-
-	if err != nil {
-		logger.Sugar().Error(err)
-	}
-
 	defer resp.Body.Close()
 
+	fmt.Println("body is:", resp.StatusCode)
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		//logger.Sugar().Error(err)
 		logger.Sugar().Error(err)
 		os.Exit(1)
 	}
+
 	var dat map[string]interface{}
 	json.Unmarshal(body, &dat)
 	bodystr, jsonerr := json.MarshalIndent(dat, "", " ")
@@ -102,6 +104,7 @@ func CreateTask(syncserver string, createjson string) []string {
 	resp := createreq.ExecRequest()
 	taskids := gjson.Get(resp, "data").Array()
 
+	fmt.Println(resp)
 	if len(taskids) == 0 {
 		logger.Sugar().Error(errors.New("task create faile \n"), resp)
 		//logger.Sugar().Info(resp)

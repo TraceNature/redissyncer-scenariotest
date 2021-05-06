@@ -4,7 +4,7 @@
   "targetRedisAddress": "10.0.1.32:16375",
   "targetPassword": "redistest0102",
   "taskName": "single2single",
-  "targetRedisVersion": 4.0,
+  "targetRedisVersion": 5.0,
   "autostart": true,
   "afresh": true,
   "batchSize": 100
