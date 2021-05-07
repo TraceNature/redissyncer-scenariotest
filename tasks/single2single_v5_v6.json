@@ -3,8 +3,8 @@
   "sourceRedisAddress": "10.0.1.31:16375",
   "targetRedisAddress": "10.0.1.32:16376",
   "targetPassword": "redistest0102",
-  "taskName": "single2single",
-  "targetRedisVersion": 4.0,
+  "taskName": "single2single_v5_v6",
+  "targetRedisVersion": 6.0,
   "autostart": true,
   "afresh": true,
   "batchSize": 100

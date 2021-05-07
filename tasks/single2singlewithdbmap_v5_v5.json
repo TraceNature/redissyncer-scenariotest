@@ -3,9 +3,15 @@
   "sourceRedisAddress": "10.0.1.31:16375",
   "targetRedisAddress": "10.0.1.32:16375",
   "targetPassword": "redistest0102",
-  "taskName": "single2single_v5_v5",
+  "dbMapper": {
+    "0": 3,
+    "2": 6,
+    "3": 5,
+    "8": 10
+  },
+  "taskName": "single2singlewithdbmap_v5_v5",
   "targetRedisVersion": 5.0,
   "autostart": true,
   "afresh": true,
-  "batchSize": 100
+  "batchSize": 1000
 }
