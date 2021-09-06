@@ -3,4 +3,4 @@
 - [x] yaml编排测试用例
 - [ ] redis conn健康检查和重试
 - [ ] 重新部署redis集群，指定master和slave
-- [ ] 细化redis基础命令
+- [X] 细化redis基础命令
