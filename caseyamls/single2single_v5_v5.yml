@@ -1,4 +1,4 @@
-syncserver: "http://dev:8888"
+syncserver: "http://10.0.0.23:8880"
 createtaskfile: "./tasks/single2single_v5_v5.json"
 gendataduration: 60
 datageninterval: 20
