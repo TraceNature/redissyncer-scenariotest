@@ -188,7 +188,7 @@ func (tc *TestCase) CheckSyncTaskStatus(taskids []string) {
 	//查看任务状态，直到COMMANDRUNING状态
 	logger.Sugar().Info("Check task status begin...")
 	for {
-		iscommandrunning := true
+		iscommandrunning := false
 		statusmap, err := synctaskhandle.GetTaskStatus(tc.SyncServer, taskids)
 
 		if err != nil {
@@ -209,23 +209,31 @@ func (tc *TestCase) CheckSyncTaskStatus(taskids []string) {
 				os.Exit(1)
 			}
 
-			if gjson.Get(v, "status").String() == "COMMANDRUNING" {
-				if gjson.Get(v, "lastDataInPutInterval").Int() < int64(60000) || gjson.Get(v, "lastDataOutPutInterval").Int() < int64(60000) {
-					iscommandrunning = false
+			if gjson.Get(v, "taskStatus").String() == "COMMANDRUNING" {
+				if gjson.Get(v, "taskStatus.lastKeyCommitTime").Int() > 0 {
+					//if gjson.Get(v, "lastDataInPutInterval").Int() > int64(60000) || gjson.Get(v, "lastDataOutPutInterval").Int() < int64(60000) {
+					//	iscommandrunning = true
+					//}
+					//如果当前时间与lastKeyCommitTime相减超过20000毫秒 iscommandrunning = true
+					localUnixTimestamp := time.Now().UnixNano() / 1e6
+					if localUnixTimestamp-gjson.Get(v, "taskStatus.lastKeyCommitTime").Int() > 20000 {
+						iscommandrunning = true
+					}
 				}
 			}
 
-			if gjson.Get(v, "status").String() == "RDBRUNING" || gjson.Get(v, "status").String() == "RUN" || gjson.Get(v, "status").String() == "CREATED" || gjson.Get(v, "status").String() == "CREATING" {
+			if gjson.Get(v, "taskStatus").String() == "RDBRUNING" || gjson.Get(v, "status").String() == "RUN" || gjson.Get(v, "status").String() == "CREATED" || gjson.Get(v, "status").String() == "CREATING" {
 				iscommandrunning = false
 			}
 
-			if gjson.Get(v, "status").String() == "BROKEN" {
+			if gjson.Get(v, "taskStatus").String() == "BROKEN" {
 				logger.Error("sync task broken! ", zap.String("taskid", k), zap.String("task_status", v))
 				os.Exit(1)
 			}
 
-			if gjson.Get(v, "status").String() == "STOP" {
+			if gjson.Get(v, "taskStatus").String() == "STOP" {
 				time.Sleep(60 * time.Second)
+				iscommandrunning = true
 			}
 		}
 

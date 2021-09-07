@@ -118,7 +118,7 @@ func (tc *TestCase) Single2Single() {
 	}
 	wg.Wait()
 
-	//查看任务状态，直到COMMANDRUNING状态
+	//查看任务状态，验证任务状态是否可以关闭，并保证数据同步完成
 	tc.CheckSyncTaskStatus(taskids)
 	logger.Sugar().Info("Check task status end")
 
