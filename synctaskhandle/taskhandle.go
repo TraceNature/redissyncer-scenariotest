@@ -49,7 +49,6 @@ func (r Request) ExecRequest() (result string) {
 	}
 	defer resp.Body.Close()
 
-	fmt.Println("body is:", resp.StatusCode)
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		//logger.Sugar().Error(err)
@@ -152,7 +151,8 @@ func StopTaskByIds(syncserver string, ids []string) {
 		Api:    StopTaskPath,
 		Body:   string(stopjsonStr),
 	}
-	stopreq.ExecRequest()
+	response := stopreq.ExecRequest()
+	fmt.Println(response)
 
 }
 
