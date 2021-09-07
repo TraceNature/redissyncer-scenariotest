@@ -11,6 +11,7 @@ import (
 	"os"
 	"strings"
 	"testcase/globalzap"
+	"time"
 )
 
 var logger = globalzap.GetLogger()
@@ -182,14 +183,19 @@ func RemoveTaskByName(syncserver string, taskname string) {
 			Api:    StopTaskPath,
 			Body:   string(stopjsonStr),
 		}
-		stopreq.ExecRequest()
+		stopResult := stopreq.ExecRequest()
+		fmt.Println(stopResult)
+
+		time.Sleep(20 * time.Second)
+
 		removereq := &Request{
 			Server: syncserver,
 			Api:    RemoveTaskPath,
 			Body:   string(stopjsonStr),
 		}
 
-		removereq.ExecRequest()
+		removeResult := removereq.ExecRequest()
+		fmt.Println(removeResult)
 	}
 
 }
