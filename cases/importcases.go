@@ -1,6 +1,8 @@
 package cases
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"github.com/go-redis/redis/v7"
 	"github.com/panjf2000/ants/v2"
@@ -13,8 +15,6 @@ import (
 	"testcase/generatedata"
 	"testcase/synctaskhandle"
 	"time"
-	"context"
-	"errors"
 )
 
 //rdb文件导入功能测试用例
@@ -155,7 +155,9 @@ func (tc *TestCase) ImportRdb2Single() {
 	logger.Sugar().Info("Check task status end")
 
 	//停止任务
-	synctaskhandle.StopTaskByIds(tc.SyncServer, taskids)
+	for _, id := range taskids {
+		synctaskhandle.StopTaskByIds(tc.SyncServer, id)
+	}
 
 	//数据校验
 	compare := &compare.CompareSingle2Single{
@@ -306,7 +308,9 @@ func (tc *TestCase) ImportAof2Single() {
 	logger.Sugar().Info("Check task status end")
 
 	//停止任务
-	synctaskhandle.StopTaskByIds(tc.SyncServer, taskids)
+	for _, id := range taskids {
+		synctaskhandle.StopTaskByIds(tc.SyncServer, id)
+	}
 
 	//数据校验
 	compare := &compare.CompareSingle2Single{

@@ -1,8 +1,10 @@
 package cases
 
 import (
+	"context"
 	"github.com/go-redis/redis/v7"
 	"github.com/panjf2000/ants/v2"
+	"github.com/pkg/errors"
 	"github.com/tidwall/gjson"
 	"os"
 	"strings"
@@ -12,8 +14,6 @@ import (
 	"testcase/generatedata"
 	"testcase/synctaskhandle"
 	"time"
-	"github.com/pkg/errors"
-	"context"
 )
 
 //基本测试案例单实例2Cluster，无映射关系
@@ -137,7 +137,9 @@ func (tc *TestCase) Single2Cluster() {
 	logger.Sugar().Info("Check task status end")
 
 	//停止任务
-	synctaskhandle.StopTaskByIds(tc.SyncServer, taskids)
+	for _, id := range taskids {
+		synctaskhandle.StopTaskByIds(tc.SyncServer, id)
+	}
 
 	//数据校验
 	compare := &compare.CompareSingle2Cluster{
@@ -286,7 +288,9 @@ func (tc *TestCase) Cluster2Cluster() {
 	logger.Sugar().Info("Check task status end")
 
 	//停止任务
-	synctaskhandle.StopTaskByIds(tc.SyncServer, taskids)
+	for _, id := range taskids {
+		synctaskhandle.StopTaskByIds(tc.SyncServer, id)
+	}
 
 	//数据校验
 	for _, v := range saddrsarray {

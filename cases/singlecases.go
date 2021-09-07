@@ -123,7 +123,9 @@ func (tc *TestCase) Single2Single() {
 	logger.Sugar().Info("Check task status end")
 
 	//停止任务
-	synctaskhandle.StopTaskByIds(tc.SyncServer, taskids)
+	for _, id := range taskids {
+		synctaskhandle.StopTaskByIds(tc.SyncServer, id)
+	}
 
 	//数据校验
 	compare := &compare.CompareSingle2Single{
@@ -273,7 +275,9 @@ func (tc TestCase) Single2SingleWithDBMap() {
 	logger.Sugar().Info("Check task status end")
 
 	//停止任务
-	synctaskhandle.StopTaskByIds(tc.SyncServer, taskids)
+	for _, id := range taskids {
+		synctaskhandle.StopTaskByIds(tc.SyncServer, id)
+	}
 
 	//数据校验
 	for k, v := range dbmap {

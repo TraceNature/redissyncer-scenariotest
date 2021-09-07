@@ -137,10 +137,10 @@ func StartTask(syncserver string, taskid string) {
 }
 
 //Stop task by task ids
-func StopTaskByIds(syncserver string, ids []string) {
+func StopTaskByIds(syncserver string, taskId string) {
 	jsonmap := make(map[string]interface{})
 
-	jsonmap["taskids"] = ids
+	jsonmap["taskId"] = taskId
 	stopjsonStr, err := json.Marshal(jsonmap)
 	if err != nil {
 		logger.Sugar().Error(err)
