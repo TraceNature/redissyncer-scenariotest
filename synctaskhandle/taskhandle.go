@@ -103,9 +103,6 @@ func CreateTask(syncserver string, createjson string) []string {
 	fmt.Println(createjson)
 	resp := createreq.ExecRequest()
 	taskids := gjson.Get(resp, "data").Array()
-
-	fmt.Println(taskids)
-
 	fmt.Println(resp)
 	if len(taskids) == 0 {
 		logger.Sugar().Error(errors.New("task create faile \n"), resp)

@@ -210,7 +210,7 @@ func (tc *TestCase) CheckSyncTaskStatus(taskids []string) {
 				os.Exit(1)
 			}
 
-			if gjson.Get(v, "taskStatus").String() == "COMMANDRUNING" {
+			if gjson.Get(v, "taskStatus").Int() == 7 {
 				if gjson.Get(v, "taskStatus.lastKeyCommitTime").Int() > 0 {
 					//if gjson.Get(v, "lastDataInPutInterval").Int() > int64(60000) || gjson.Get(v, "lastDataOutPutInterval").Int() < int64(60000) {
 					//	iscommandrunning = true
@@ -223,16 +223,19 @@ func (tc *TestCase) CheckSyncTaskStatus(taskids []string) {
 				}
 			}
 
-			if gjson.Get(v, "taskStatus").String() == "RDBRUNING" || gjson.Get(v, "status").String() == "RUN" || gjson.Get(v, "status").String() == "CREATED" || gjson.Get(v, "status").String() == "CREATING" {
+			if gjson.Get(v, "taskStatus").Int() == 1 ||
+				gjson.Get(v, "taskStatus").Int() == 2 ||
+				gjson.Get(v, "taskStatus").Int() == 3 ||
+				gjson.Get(v, "taskStatus").Int() == 6 {
 				iscommandrunning = false
 			}
 
-			if gjson.Get(v, "taskStatus").String() == "BROKEN" {
+			if gjson.Get(v, "taskStatus").Int() == 5 {
 				logger.Error("sync task broken! ", zap.String("taskid", k), zap.String("task_status", v))
 				os.Exit(1)
 			}
 
-			if gjson.Get(v, "taskStatus").String() == "STOP" {
+			if gjson.Get(v, "taskStatus").Int() == 0 {
 				time.Sleep(60 * time.Second)
 				iscommandrunning = true
 			}
