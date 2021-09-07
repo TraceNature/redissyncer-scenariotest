@@ -279,6 +279,9 @@ func (tc TestCase) Single2SingleWithDBMap() {
 		synctaskhandle.StopTaskByIds(tc.SyncServer, id)
 	}
 
+	//任务停止保护时间
+	time.Sleep(60 * time.Second)
+
 	//数据校验
 	for k, v := range dbmap {
 		sdb, err := strconv.Atoi(k)
