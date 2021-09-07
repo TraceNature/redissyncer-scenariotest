@@ -242,7 +242,7 @@ func (tc *TestCase) CheckSyncTaskStatus(taskids []string) {
 		}
 
 		if iscommandrunning {
-			time.Sleep(3 * time.Second)
+			time.Sleep(60 * time.Second)
 			return
 		}
 
