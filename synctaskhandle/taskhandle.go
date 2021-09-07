@@ -113,7 +113,7 @@ func CreateTask(syncserver string, createjson string) []string {
 	taskidsstrarray := []string{}
 	for _, v := range taskids {
 		//fmt.Println(gjson.Get(v.String(), "taskId").String())
-		taskidsstrarray = append(taskidsstrarray, gjson.Get(v.String(), "taskId").String())
+		taskidsstrarray = append(taskidsstrarray, gjson.Get(v.String(), "data.taskId").String())
 	}
 
 	return taskidsstrarray
