@@ -187,7 +187,7 @@ func (tc *TestCase) ParseJsonFile(casefile string) []byte {
 func (tc *TestCase) CheckSyncTaskStatus(taskids []string) {
 	//查看任务状态，直到COMMANDRUNING状态
 	logger.Sugar().Info("Check task status begin...")
-	fmt.Println("taskids:", taskids)
+
 	for {
 		iscommandrunning := false
 		statusmap, err := synctaskhandle.GetTaskStatus(tc.SyncServer, taskids)
