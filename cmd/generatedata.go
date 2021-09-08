@@ -40,13 +40,12 @@ to quickly create a Cobra application.`,
 		redisaddr, _ := cmd.Flags().GetString("redisaddr")
 		passwd, _ := cmd.Flags().GetString("redispassword")
 		dbNumber, _ := cmd.Flags().GetInt("dbnumber")
-		sysDb := 0
-		if dbNumber >= 0 {
-			sysDb = dbNumber
-		}
 		redisopt := &redis.Options{
 			Addr: redisaddr,
-			DB:   sysDb, // use default DB
+			DB:   0, // use default DB
+		}
+		if dbNumber > 0 {
+			redisopt.DB = dbNumber
 		}
 
 		if passwd != "" {
