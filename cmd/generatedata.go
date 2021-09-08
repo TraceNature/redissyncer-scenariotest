@@ -44,7 +44,6 @@ to quickly create a Cobra application.`,
 		if db_number_error == nil && db_number >= 0 {
 			sys_db = db_number
 		}
-		fmt.Println(db_number)
 		redisopt := &redis.Options{
 			Addr: redisaddr,
 			DB:   sys_db, // use default DB
