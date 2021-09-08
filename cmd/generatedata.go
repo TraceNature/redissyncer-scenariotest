@@ -59,6 +59,7 @@ to quickly create a Cobra application.`,
 
 		d, _ := cmd.Flags().GetInt64("basedatasize")
 		i, _ := cmd.Flags().GetInt64("incrementdatasize")
+
 		fmt.Println(d, i)
 
 		generatedata.GenerateBase(client, d)
