@@ -1,7 +1,6 @@
 package cases
 
 import (
-	"fmt"
 	"github.com/tidwall/gjson"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
@@ -203,14 +202,13 @@ func (tc *TestCase) CheckSyncTaskStatus(taskids []string) {
 		}
 
 		for k, v := range statusmap {
-
-			fmt.Println(v)
 			if v == "" {
 				logger.Error("Task not exists ", zap.String("taskid", k))
 				os.Exit(1)
 			}
 
 			if gjson.Get(v, "taskStatus").Int() == 7 {
+				logger.Sugar().Info("lastKeyCommitTime", gjson.Get(v, "taskStatus.lastKeyCommitTime").Int())
 				if gjson.Get(v, "taskStatus.lastKeyCommitTime").Int() > 0 {
 					//if gjson.Get(v, "lastDataInPutInterval").Int() > int64(60000) || gjson.Get(v, "lastDataOutPutInterval").Int() < int64(60000) {
 					//	iscommandrunning = true
