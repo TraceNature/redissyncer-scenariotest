@@ -1,6 +1,7 @@
 package compare
 
 import (
+	"fmt"
 	"github.com/go-redis/redis/v7"
 	"github.com/panjf2000/ants/v2"
 	"go.uber.org/zap"
@@ -82,6 +83,7 @@ func (compare *CompareSingle2Single) CompareDB() {
 func (compare *CompareSingle2Single) CompareKeys(keys []string) {
 	var result *CompareResult
 	for _, v := range keys {
+		fmt.Println(v)
 		keytype, err := compare.Source.Type(v).Result()
 		if err != nil {
 			zaplogger.Sugar().Error(err)

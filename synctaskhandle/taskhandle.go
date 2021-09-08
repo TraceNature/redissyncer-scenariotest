@@ -186,7 +186,7 @@ func RemoveTaskByName(syncserver string, taskname string) {
 		stopResult := stopreq.ExecRequest()
 		fmt.Println(stopResult)
 
-		time.Sleep(20 * time.Second)
+		time.Sleep(10 * time.Second)
 
 		removereq := &Request{
 			Server: syncserver,
