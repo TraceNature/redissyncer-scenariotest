@@ -202,14 +202,17 @@ func (tc *TestCase) CheckSyncTaskStatus(taskids []string) {
 		}
 
 		for k, v := range statusmap {
+			logger.Sugar().Info(v)
 			if v == "" {
 				logger.Error("Task not exists ", zap.String("taskid", k))
 				os.Exit(1)
 			}
 
+			logger.Sugar().Info("lastKeyCommitTime", gjson.Get(v, "taskStatus.lastKeyCommitTime").Int())
+
 			if gjson.Get(v, "taskStatus").Int() == 7 {
-				logger.Sugar().Info("lastKeyCommitTime", gjson.Get(v, "taskStatus.lastKeyCommitTime").Int())
-				if gjson.Get(v, "taskStatus.lastKeyCommitTime").Int() > 0 {
+
+				if gjson.Get(v, "taskStatus.lastKeyCommitTime").Int() >= 0 {
 					//if gjson.Get(v, "lastDataInPutInterval").Int() > int64(60000) || gjson.Get(v, "lastDataOutPutInterval").Int() < int64(60000) {
 					//	iscommandrunning = true
 					//}
@@ -237,6 +240,7 @@ func (tc *TestCase) CheckSyncTaskStatus(taskids []string) {
 				time.Sleep(60 * time.Second)
 				iscommandrunning = true
 			}
+			logger.Sugar().Info(iscommandrunning)
 		}
 
 		if iscommandrunning {
