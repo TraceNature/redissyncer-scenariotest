@@ -39,9 +39,15 @@ to quickly create a Cobra application.`,
 		fmt.Println("generatedata called")
 		redisaddr, _ := cmd.Flags().GetString("redisaddr")
 		passwd, _ := cmd.Flags().GetString("redispassword")
+		db_number, db_number_error := cmd.Flags().GetInt("dbnumber")
+		sys_db := 0
+		if db_number_error == nil && db_number >= 0 {
+			sys_db = db_number
+		}
+		fmt.Println(db_number)
 		redisopt := &redis.Options{
 			Addr: redisaddr,
-			DB:   0, // use default DB
+			DB:   sys_db, // use default DB
 		}
 
 		if passwd != "" {
@@ -74,6 +80,7 @@ func init() {
 	generatedataCmd.Flags().Int64P("incrementdatasize", "i", 0, "Increment data loopsizes")
 	generatedataCmd.Flags().StringP("redisaddr", "a", "127.0.0.1:6379", "Redis address like '10.0.0.0:6379'")
 	generatedataCmd.Flags().StringP("redispassword", "p", "", "Redis password")
+	generatedataCmd.Flags().IntP("dbnumber", "n", 0, "Db number")
 	rootCmd.AddCommand(generatedataCmd)
 
 }
