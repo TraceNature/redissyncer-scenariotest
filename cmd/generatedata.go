@@ -39,14 +39,14 @@ to quickly create a Cobra application.`,
 		fmt.Println("generatedata called")
 		redisaddr, _ := cmd.Flags().GetString("redisaddr")
 		passwd, _ := cmd.Flags().GetString("redispassword")
-		db_number, db_number_error := cmd.Flags().GetInt("dbnumber")
-		sys_db := 0
-		if db_number_error == nil && db_number >= 0 {
-			sys_db = db_number
+		dbNumber, _ := cmd.Flags().GetInt("dbnumber")
+		sysDb := 0
+		if dbNumber >= 0 {
+			sysDb = dbNumber
 		}
 		redisopt := &redis.Options{
 			Addr: redisaddr,
-			DB:   sys_db, // use default DB
+			DB:   sysDb, // use default DB
 		}
 
 		if passwd != "" {
