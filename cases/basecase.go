@@ -216,7 +216,7 @@ func (tc *TestCase) CheckSyncTaskStatus(taskids []string) {
 
 			if gjson.Get(v, "taskStatus").Int() == 7 {
 
-				if gjson.Get(v, "taskStatus.lastKeyCommitTime").Int() >= 0 {
+				if gjson.Get(v, "taskStatus.lastKeyCommitTime").Int() > 0 {
 					//if gjson.Get(v, "lastDataInPutInterval").Int() > int64(60000) || gjson.Get(v, "lastDataOutPutInterval").Int() < int64(60000) {
 					//	iscommandrunning = true
 					//}
