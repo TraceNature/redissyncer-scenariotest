@@ -1,12 +1,13 @@
 module testcase
 
-go 1.12
+go 1.16
 
 require (
 	github.com/chzyer/logex v1.1.10 // indirect
 	github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e
 	github.com/chzyer/test v0.0.0-20180213035817-a1ea475d72b1 // indirect
 	github.com/go-redis/redis/v7 v7.0.0-beta.4
+	github.com/json-iterator/go v1.1.12
 	github.com/mattn/go-shellwords v1.0.11
 	github.com/panjf2000/ants/v2 v2.2.2
 	github.com/pkg/errors v0.8.0
@@ -19,4 +20,5 @@ require (
 	golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gopkg.in/yaml.v2 v2.2.7
+
 )
