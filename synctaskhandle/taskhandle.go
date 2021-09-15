@@ -273,7 +273,7 @@ func GetSameTaskNameIDs(syncserver string, taskname string) ([]string, error) {
 }
 
 func GetLastKeyAcross(syncserver string, taskID string) (response.LastKeyAcrossResult, error) {
-	var result response.LastKeyAcrossResult
+	var result = response.LastKeyAcrossResult{}
 	reqJson := make(map[string]interface{})
 	reqJson["taskId"] = taskID
 	jsonStr, err := json.Marshal(reqJson)
