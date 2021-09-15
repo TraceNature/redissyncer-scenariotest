@@ -292,20 +292,14 @@ func GetLastKeyAcross(syncserver string, taskID string) (response.LastKeyAcrossR
 
 	resp := req.ExecRequest()
 
-	logger.Sugar().Info(resp)
+	//jsonstr, err := jsoniter.Marshal(resp)
+	//if err != nil {
+	//	return result, nil
+	//}
 
-	jsonstr, err := jsoniter.Marshal(resp)
-	if err != nil {
-		return result, nil
-	}
-
-	logger.Sugar().Info(jsonstr)
-	
 	if err := jsoniter.Unmarshal([]byte(resp), &result); err != nil {
 		return result, err
 	}
-
-	logger.Sugar().Info(result)
 
 	return result, nil
 }

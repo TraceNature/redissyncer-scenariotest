@@ -209,7 +209,7 @@ func (tc *TestCase) CheckSyncTaskStatus(taskids []string) {
 				logger.Sugar().Error(err)
 				continue
 			}
-			logger.Sugar().Info(lastKeyAcross)
+
 			if v == "" {
 				logger.Error("Task not exists ", zap.String("taskid", k))
 				os.Exit(1)
@@ -228,6 +228,9 @@ func (tc *TestCase) CheckSyncTaskStatus(taskids []string) {
 					//}
 					//如果当前时间与lastKeyCommitTime相减超过20000毫秒 iscommandrunning = true
 					localUnixTimestamp := time.Now().UnixNano() / 1e6
+
+					logger.Sugar().Info(localUnixTimestamp - lastKeyAcross.LastKeyAcross.LastKeyCommitTime)
+
 					if localUnixTimestamp-lastKeyAcross.LastKeyAcross.LastKeyCommitTime > 20000 {
 						iscommandrunning = true
 					}
