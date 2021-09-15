@@ -188,7 +188,7 @@ func (tc *TestCase) CheckSyncTaskStatus(taskids []string) {
 	logger.Sugar().Info("Check task status begin...")
 
 	for {
-		logger.Sugar().Info("loop begin")
+
 		iscommandrunning := false
 		statusmap, err := synctaskhandle.GetTaskStatus(tc.SyncServer, taskids)
 
@@ -196,13 +196,12 @@ func (tc *TestCase) CheckSyncTaskStatus(taskids []string) {
 			logger.Sugar().Error(err)
 			os.Exit(1)
 		}
-		logger.Sugar().Info("get statusmap")
 
 		if len(statusmap) == 0 {
 			logger.Error("No status return")
 			os.Exit(1)
 		}
-
+		logger.Sugar().Info(statusmap)
 		for k, v := range statusmap {
 			lastKeyAcross, err := synctaskhandle.GetLastKeyAcross(tc.SyncServer, k)
 			if err != nil {
@@ -220,6 +219,7 @@ func (tc *TestCase) CheckSyncTaskStatus(taskids []string) {
 			}
 
 			if gjson.Get(v, "taskStatus").Int() == 7 {
+
 				if lastKeyAcross.LastKeyAcross.LastKeyCommitTime > 0 {
 					//if gjson.Get(v, "lastDataInPutInterval").Int() > int64(60000) || gjson.Get(v, "lastDataOutPutInterval").Int() < int64(60000) {
 					//	iscommandrunning = true
