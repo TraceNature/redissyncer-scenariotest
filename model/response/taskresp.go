@@ -34,6 +34,6 @@ type AllTaskStatusResult struct {
 }
 
 type LastKeyAcrossResult struct {
-	LastKeyAcross *global.LastKeyAcross `map:"lastkeyacross" json:"lastkeyacross" yaml:"lastkeyacross"`
-	Errors        *global.Error         `map:"errors" json:"errors" yaml:"errors"`
+	LastKeyAcross global.LastKeyAcross `map:"lastkeyacross" json:"lastkeyacross" yaml:"lastkeyacross"`
+	Errors        global.Error         `map:"errors" json:"errors" yaml:"errors"`
 }
