@@ -60,13 +60,14 @@ func (r Request) ExecRequest() (result string) {
 		os.Exit(1)
 	}
 
-	var dat map[string]interface{}
-	json.Unmarshal(body, &dat)
-	bodystr, jsonerr := json.MarshalIndent(dat, "", " ")
-	if jsonerr != nil {
-		logger.Sugar().Error(err)
-	}
-	return string(bodystr)
+	//var dat map[string]interface{}
+	//json.Unmarshal(body, &dat)
+	//bodystr, jsonerr := json.MarshalIndent(dat, "", " ")
+	//if jsonerr != nil {
+	//	logger.Sugar().Error(err)
+	//}
+	//return string(bodystr)
+	return string(body)
 }
 
 //创建导入文件任务
