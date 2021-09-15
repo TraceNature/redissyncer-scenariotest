@@ -203,9 +203,10 @@ func (tc *TestCase) CheckSyncTaskStatus(taskids []string) {
 		}
 
 		for k, v := range statusmap {
-			logger.Sugar().Info(k, v)
+		
 			lastKeyAcross, err := synctaskhandle.GetLastKeyAcross(tc.SyncServer, k)
 			if err != nil {
+				logger.Sugar().Error(err)
 				continue
 			}
 			logger.Sugar().Info(lastKeyAcross)
