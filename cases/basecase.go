@@ -221,6 +221,8 @@ func (tc *TestCase) CheckSyncTaskStatus(taskids []string) {
 					continue
 				}
 
+				logger.Sugar().Info(lastKeyAcross)
+
 				if lastKeyAcross.LastKeyAcross.LastKeyCommitTime > 0 {
 					//if gjson.Get(v, "lastDataInPutInterval").Int() > int64(60000) || gjson.Get(v, "lastDataOutPutInterval").Int() < int64(60000) {
 					//	iscommandrunning = true
