@@ -296,7 +296,7 @@ func GetLastKeyAcross(syncserver string, taskID string) (response.LastKeyAcrossR
 		return result, nil
 	}
 
-	if err := json.Unmarshal([]byte(jsonstr), &result); err != nil {
+	if err := json.Unmarshal(jsonstr, &result); err != nil {
 		return result, err
 	}
 
