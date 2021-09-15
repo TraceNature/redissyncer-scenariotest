@@ -197,7 +197,7 @@ func (tc *TestCase) CheckSyncTaskStatus(taskids []string) {
 			os.Exit(1)
 		}
 		logger.Sugar().Info("get statusmap")
-		
+
 		if len(statusmap) == 0 {
 			logger.Error("No status return")
 			os.Exit(1)
@@ -248,9 +248,9 @@ func (tc *TestCase) CheckSyncTaskStatus(taskids []string) {
 		}
 
 		if iscommandrunning {
-			time.Sleep(10 * time.Second)
 			return
 		}
+		time.Sleep(10 * time.Second)
 
 	}
 }
