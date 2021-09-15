@@ -291,11 +291,7 @@ func GetLastKeyAcross(syncserver string, taskID string) (response.LastKeyAcrossR
 
 	logger.Sugar().Info(resp)
 
-	respjson, err := json.Marshal(resp)
-	if err != nil {
-		return result, err
-	}
-	if err := json.Unmarshal(respjson, &result); err != nil {
+	if err := json.Unmarshal([]byte(resp), &result); err != nil {
 		return result, err
 	}
 
