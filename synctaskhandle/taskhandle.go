@@ -11,6 +11,7 @@ import (
 	"os"
 	"strings"
 	"testcase/globalzap"
+	"testcase/model/response"
 	"time"
 )
 
@@ -23,6 +24,7 @@ const RemoveTaskPath = "/api/task/remove"
 const ListTasksPath = "/api/task/listtasks"
 const TaskListByIDs = "/api/task/listbyids"
 const TaskListByName = "/api/task/listbynames"
+const LastKeyAcross = "/api/task/lastkeyacross"
 const ImportFilePath = "/api/v2/file/createtask"
 
 type Request struct {
@@ -268,4 +270,32 @@ func GetSameTaskNameIDs(syncserver string, taskname string) ([]string, error) {
 	}
 
 	return existstaskids, nil
+}
+
+func GetLastKeyAcross(syncserver string, taskID string) (response.LastKeyAcrossResult, error) {
+	var result response.LastKeyAcrossResult
+	reqJson := make(map[string]interface{})
+	reqJson["taskId"] = taskID
+	jsonStr, err := json.Marshal(reqJson)
+	if err != nil {
+		logger.Info(err.Error())
+		return result, err
+	}
+	req := &Request{
+		Server: syncserver,
+		Api:    LastKeyAcross,
+		Body:   string(jsonStr),
+	}
+
+	resp := req.ExecRequest()
+
+	respjson, err := json.Marshal(resp)
+	if err != nil {
+		return result, err
+	}
+	if err := json.Unmarshal(respjson, &result); err != nil {
+		return result, err
+	}
+
+	return result, nil
 }
