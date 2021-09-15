@@ -215,14 +215,19 @@ func (tc *TestCase) CheckSyncTaskStatus(taskids []string) {
 			}
 
 			if gjson.Get(v, "taskStatus").Int() == 7 {
+				lastKeyAcross, err := synctaskhandle.GetLastKeyAcross(tc.SyncServer, k)
 
-				if gjson.Get(v, "taskStatus.lastKeyCommitTime").Int() > 0 {
+				if err != nil {
+					continue
+				}
+
+				if lastKeyAcross.LastKeyAcross.LastKeyCommitTime > 0 {
 					//if gjson.Get(v, "lastDataInPutInterval").Int() > int64(60000) || gjson.Get(v, "lastDataOutPutInterval").Int() < int64(60000) {
 					//	iscommandrunning = true
 					//}
 					//如果当前时间与lastKeyCommitTime相减超过20000毫秒 iscommandrunning = true
 					localUnixTimestamp := time.Now().UnixNano() / 1e6
-					if localUnixTimestamp-gjson.Get(v, "taskStatus.lastKeyCommitTime").Int() > 20000 {
+					if localUnixTimestamp-lastKeyAcross.LastKeyAcross.LastKeyCommitTime > 20000 {
 						iscommandrunning = true
 					}
 				}
@@ -244,7 +249,7 @@ func (tc *TestCase) CheckSyncTaskStatus(taskids []string) {
 		}
 
 		if iscommandrunning {
-			time.Sleep(180 * time.Second)
+			time.Sleep(10 * time.Second)
 			return
 		}
 
