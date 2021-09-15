@@ -13,6 +13,7 @@ import (
 	"testcase/globalzap"
 	"testcase/model/response"
 	"time"
+	jsoniter "github.com/json-iterator/go"
 )
 
 var logger = globalzap.GetLogger()
@@ -273,6 +274,7 @@ func GetSameTaskNameIDs(syncserver string, taskname string) ([]string, error) {
 }
 
 func GetLastKeyAcross(syncserver string, taskID string) (response.LastKeyAcrossResult, error) {
+	var jsoniter = jsoniter.ConfigCompatibleWithStandardLibrary
 	var result response.LastKeyAcrossResult
 	reqJson := make(map[string]interface{})
 	reqJson["taskId"] = taskID
@@ -291,7 +293,7 @@ func GetLastKeyAcross(syncserver string, taskID string) (response.LastKeyAcrossR
 
 	logger.Sugar().Info(resp)
 
-	jsonstr, err := json.Marshal(resp)
+	jsonstr, err := jsoniter.Marshal(resp)
 	if err != nil {
 		return result, nil
 	}
