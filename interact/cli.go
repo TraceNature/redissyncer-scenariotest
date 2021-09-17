@@ -48,8 +48,7 @@ func init() {
 }
 
 func cliRun(cmd *cobra.Command, args []string) {
-	banner := "\n    ____           ___      _____                                       ___ \n   / __ \\___  ____/ (_)____/ ___/__  ______  ________  _____      _____/ (_)\n  / /_/ / _ \\/ __  / / ___/\\__ \\/ / / / __ \\/ ___/ _ \\/ ___/_____/ ___/ / / \n / _, _/  __/ /_/ / (__  )___/ / /_/ / / / / /__/  __/ /  /_____/ /__/ / /  \n/_/ |_|\\___/\\__,_/_/____//____/\\__, /_/ /_/\\___/\\___/_/         \\___/_/_/   \n                              /____/                                        \n"
-
+	banner := "\n               _ _                                  _____ \n  _ __ ___  __| (_)___ ___ _   _ _ __   ___ ___ _ _|_   _|\n | '__/ _ \\/ _` | / __/ __| | | | '_ \\ / __/ _ \\ '__|| |  \n | | |  __/ (_| | \\__ \\__ \\ |_| | | | | (_|  __/ |   | |  \n |_|  \\___|\\__,_|_|___/___/\\__, |_| |_|\\___\\___|_|   |_|  \n                           |___/                          \n"
 	if interact {
 		//err := check.CheckEnv()
 		//if err != nil {
@@ -73,7 +72,7 @@ func cliRun(cmd *cobra.Command, args []string) {
 func getBasicCmd() *cobra.Command {
 
 	rootCmd := &cobra.Command{
-		Use:   "redissyncer-cli",
+		Use:   "redissyncer-test",
 		Short: "redissyncer command line interface",
 		Long:  "",
 	}
@@ -83,9 +82,7 @@ func getBasicCmd() *cobra.Command {
 	rootCmd.AddCommand(
 		cmd.NewConfigCommand(),
 		cmd.NewExecCommand(),
-		//cmd.NewTaskCommand(),
-		//cmd.NewLoginCommand(),
-		//cmd.NewLogoutCommand(),
+		cmd.NewGenDataCommand(),
 	)
 
 	rootCmd.Flags().ParseErrorsWhitelist.UnknownFlags = true
@@ -221,7 +218,7 @@ func loop() {
 		}
 		cmd := strings.Join(cmds, " ")
 		cmds = cmds[:0]
-		rl.SetPrompt("redissyncer-cli> ")
+		rl.SetPrompt("redissyncer-test> ")
 		rl.SaveHistory(cmd)
 
 		args, err := shellwords.Parse(cmd)

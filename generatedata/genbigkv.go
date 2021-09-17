@@ -12,7 +12,7 @@ import (
 type GenBigKV struct {
 	RedisConn   *redis.Conn
 	KeySuffix   string
-	Loopstep    int //生成数据的循环次数
+	Length      int //set、hash等容器型key的长度
 	EXPIRE      time.Duration
 	DB          int
 	ValuePrefix string
@@ -21,7 +21,7 @@ type GenBigKV struct {
 func (gbkv *GenBigKV) GenBigHash() string {
 	t1 := time.Now()
 	key := "BigHash_" + gbkv.KeySuffix
-	for i := 0; i < gbkv.Loopstep; i++ {
+	for i := 0; i < gbkv.Length; i++ {
 		gbkv.RedisConn.HSet(key, key+strconv.Itoa(i), gbkv.ValuePrefix+strconv.Itoa(i))
 	}
 	gbkv.RedisConn.Expire(key, gbkv.EXPIRE)
@@ -34,7 +34,7 @@ func (gbkv *GenBigKV) GenBigHash() string {
 func (gbkv *GenBigKV) GenBigList() string {
 	t1 := time.Now()
 	key := "BigList_" + gbkv.KeySuffix
-	for i := 0; i < gbkv.Loopstep; i++ {
+	for i := 0; i < gbkv.Length; i++ {
 		gbkv.RedisConn.LPush(key, gbkv.ValuePrefix+strconv.Itoa(i))
 	}
 	gbkv.RedisConn.Expire(key, gbkv.EXPIRE)
@@ -47,19 +47,19 @@ func (gbkv *GenBigKV) GenBigList() string {
 func (gbkv *GenBigKV) GenBigSet() string {
 	t1 := time.Now()
 	key := "BigSet_" + gbkv.KeySuffix
-	for i := 0; i < gbkv.Loopstep; i++ {
+	for i := 0; i < gbkv.Length; i++ {
 		gbkv.RedisConn.SAdd(key, gbkv.ValuePrefix+strconv.Itoa(i))
 	}
+
 	gbkv.RedisConn.Expire(key, gbkv.EXPIRE)
 	t2 := time.Now()
 	zaplogger.Info("GenBigKV", zap.Int("db", gbkv.DB), zap.String("keytype", "set"), zap.String("key", key), zap.String("duration", t2.Sub(t1).String()))
 	return key
 }
-
 func (gbkv *GenBigKV) GenBigZset() string {
 	t1 := time.Now()
 	key := "BigZset_" + gbkv.KeySuffix
-	for i := 0; i < gbkv.Loopstep; i++ {
+	for i := 0; i < gbkv.Length; i++ {
 		member := &redis.Z{
 			Score:  rand.Float64(),
 			Member: gbkv.ValuePrefix + strconv.Itoa(i),
@@ -75,7 +75,7 @@ func (gbkv *GenBigKV) GenBigZset() string {
 func (gbkv *GenBigKV) GenBigString() {
 	t1 := time.Now()
 	key := "BigString_" + gbkv.KeySuffix
-	for i := 0; i < gbkv.Loopstep; i++ {
+	for i := 0; i < gbkv.Length; i++ {
 		gbkv.RedisConn.Set(key+strconv.Itoa(i), gbkv.ValuePrefix+strconv.Itoa(i), gbkv.EXPIRE)
 	}
 	t2 := time.Now()
@@ -93,7 +93,7 @@ func (gbkv *GenBigKV) GenerateBaseDataParallel(client *redis.Client) map[string]
 		newgbkv := new(GenBigKV)
 		newgbkv.RedisConn = client.Conn()
 		newgbkv.KeySuffix = gbkv.KeySuffix
-		newgbkv.Loopstep = gbkv.Loopstep
+		newgbkv.Length = gbkv.Length
 		newgbkv.EXPIRE = gbkv.EXPIRE
 		newgbkv.DB = gbkv.DB
 		newgbkv.ValuePrefix = gbkv.ValuePrefix
@@ -106,7 +106,7 @@ func (gbkv *GenBigKV) GenerateBaseDataParallel(client *redis.Client) map[string]
 		newgbkv := new(GenBigKV)
 		newgbkv.RedisConn = client.Conn()
 		newgbkv.KeySuffix = gbkv.KeySuffix
-		newgbkv.Loopstep = gbkv.Loopstep
+		newgbkv.Length = gbkv.Length
 		newgbkv.EXPIRE = gbkv.EXPIRE
 		newgbkv.ValuePrefix = gbkv.ValuePrefix
 		newgbkv.DB = gbkv.DB
@@ -119,7 +119,7 @@ func (gbkv *GenBigKV) GenerateBaseDataParallel(client *redis.Client) map[string]
 		newgbkv := new(GenBigKV)
 		newgbkv.RedisConn = client.Conn()
 		newgbkv.KeySuffix = gbkv.KeySuffix
-		newgbkv.Loopstep = gbkv.Loopstep
+		newgbkv.Length = gbkv.Length
 		newgbkv.EXPIRE = gbkv.EXPIRE
 		newgbkv.ValuePrefix = gbkv.ValuePrefix
 		newgbkv.DB = gbkv.DB
@@ -132,7 +132,7 @@ func (gbkv *GenBigKV) GenerateBaseDataParallel(client *redis.Client) map[string]
 		newgbkv := new(GenBigKV)
 		newgbkv.RedisConn = client.Conn()
 		newgbkv.KeySuffix = gbkv.KeySuffix
-		newgbkv.Loopstep = gbkv.Loopstep
+		newgbkv.Length = gbkv.Length
 		newgbkv.EXPIRE = gbkv.EXPIRE
 		newgbkv.ValuePrefix = gbkv.ValuePrefix
 		newgbkv.DB = gbkv.DB
@@ -145,7 +145,7 @@ func (gbkv *GenBigKV) GenerateBaseDataParallel(client *redis.Client) map[string]
 		newgbkv := new(GenBigKV)
 		newgbkv.RedisConn = client.Conn()
 		newgbkv.KeySuffix = gbkv.KeySuffix
-		newgbkv.Loopstep = gbkv.Loopstep
+		newgbkv.Length = gbkv.Length
 		newgbkv.EXPIRE = gbkv.EXPIRE
 		newgbkv.ValuePrefix = gbkv.ValuePrefix
 		newgbkv.DB = gbkv.DB

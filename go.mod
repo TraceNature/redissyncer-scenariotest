@@ -8,9 +8,11 @@ require (
 	github.com/chzyer/test v0.0.0-20180213035817-a1ea475d72b1 // indirect
 	github.com/go-redis/redis/v7 v7.0.0-beta.4
 	github.com/json-iterator/go v1.1.12
+	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
+	github.com/lestrrat-go/strftime v1.0.5 // indirect
 	github.com/mattn/go-shellwords v1.0.11
 	github.com/panjf2000/ants/v2 v2.2.2
-	github.com/pkg/errors v0.8.0
+	github.com/pkg/errors v0.8.1
 	github.com/satori/go.uuid v1.2.0
 	github.com/sirupsen/logrus v1.2.0
 	github.com/spf13/cobra v0.0.5

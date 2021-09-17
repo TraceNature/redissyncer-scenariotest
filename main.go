@@ -22,20 +22,17 @@ import (
 	"os/signal"
 	"strings"
 	"syscall"
+	"testcase/core"
+	"testcase/global"
 	"testcase/interact"
 )
 
-//func init() {
-//
-//}
-//
-//func main() {
-//	cmd.Execute()
-//}
 
 func main() {
 
 	//cmd.Execute()
+
+	global.RSPLog = core.Zap()
 
 	pdAddr := os.Getenv("PD_ADDR")
 	if pdAddr != "" {

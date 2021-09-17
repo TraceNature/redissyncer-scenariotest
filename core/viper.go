@@ -28,17 +28,17 @@ func Viper(path ...string) *viper.Viper {
 					config = dir + "/" + ConfigFile
 				}
 
-				fmt.Printf("您正在使用config的默认值,config的路径为%v\n", config)
+				//fmt.Printf("您正在使用config的默认值,config的路径为%v\n", config)
 			} else {
 				config = configEnv
-				fmt.Printf("您正在使用GVA_CONFIG环境变量,config的路径为%v\n", config)
+				//fmt.Printf("您正在使用GVA_CONFIG环境变量,config的路径为%v\n", config)
 			}
 		} else {
-			fmt.Printf("您正在使用命令行的-c参数传递的值,config的路径为%v\n", config)
+			//fmt.Printf("您正在使用命令行的-c参数传递的值,config的路径为%v\n", config)
 		}
 	} else {
 		config = path[0]
-		fmt.Printf("您正在使用func Viper()传递的值,config的路径为%v\n", config)
+		//fmt.Printf("您正在使用func Viper()传递的值,config的路径为%v\n", config)
 	}
 
 	v := viper.New()
@@ -49,15 +49,5 @@ func Viper(path ...string) *viper.Viper {
 	}
 	v.WatchConfig()
 
-	//v.OnConfigChange(func(e fsnotify.Event) {
-	//	fmt.Println("config file changed:", e.Name)
-	//	if err := v.Unmarshal(&global.RSPConfig); err != nil {
-	//		fmt.Println(err)
-	//	}
-	//})
-	//
-	//if err := v.Unmarshal(&global.RSPConfig); err != nil {
-	//	fmt.Println(err)
-	//}
 	return v
 }

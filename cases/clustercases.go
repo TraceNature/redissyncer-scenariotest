@@ -90,9 +90,8 @@ func (tc *TestCase) Single2Cluster() {
 	
 	//生成垫底数据
 	bgkv := generatedata.GenBigKV{
-		KeySuffix:
-		commons.RandString(tc.BigKV_KeySuffix_Len),
-		Loopstep:    tc.BigKV_Loopstep,
+		KeySuffix:   commons.RandString(tc.BigKV_KeySuffix_Len),
+		Length:      tc.BigKV_Loopstep,
 		EXPIRE:      time.Duration(tc.BigKV_EXPIRE) * time.Second,
 		ValuePrefix: commons.RandString(tc.BigKV_ValuePrefix_Len),
 	}
@@ -243,7 +242,7 @@ func (tc *TestCase) Cluster2Cluster() {
 	bgkv := generatedata.GenBigKVCluster{
 		RedisClusterClient: sclient,
 		KeySuffix:          commons.RandString(tc.BigKV_KeySuffix_Len),
-		Loopstep:           tc.BigKV_Loopstep,
+		Length:             tc.BigKV_Loopstep,
 		EXPIRE:             time.Duration(tc.BigKV_EXPIRE) * time.Second,
 		ValuePrefix:        commons.RandString(tc.BigKV_ValuePrefix_Len),
 	}

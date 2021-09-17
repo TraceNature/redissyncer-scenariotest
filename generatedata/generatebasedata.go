@@ -2,17 +2,17 @@ package generatedata
 
 import (
 	"github.com/go-redis/redis/v7"
-	"github.com/sirupsen/logrus"
+	"github.com/panjf2000/ants/v2"
+	"go.uber.org/zap"
 	"math/rand"
 	"strconv"
 	"sync"
 	"testcase/global"
 	"time"
-	"github.com/panjf2000/ants/v2"
 )
 import "testcase/commons"
 
-var logger = global.GetInstance()
+var logger = global.RSPLog
 
 func GenerateBase(client *redis.Client, loopstep int64) {
 
@@ -34,12 +34,12 @@ func GenerateBase(client *redis.Client, loopstep int64) {
 			client.LPush(listname, basevalue+strconv.FormatInt(i, 10))
 		}
 		t2 := time.Now()
-		logger.Info("Finish make big list   ", t2.Sub(t1))
+		logger.Sugar().Info("Finish make big list   ", t2.Sub(t1))
 	}
 	p.Submit(biglistfunc)
 
 	//生成string kv
-	logger.Info("make strings")
+	logger.Sugar().Info("make strings")
 	//basestring := commons.RandString(128)
 	wg.Add(1)
 	makestringfunc := func() {
@@ -49,12 +49,12 @@ func GenerateBase(client *redis.Client, loopstep int64) {
 			client.Set(prefix+"str"+strconv.FormatInt(i, 10), basevalue, time.Duration(3600*time.Second))
 		}
 		t2 := time.Now()
-		logger.Info("Finish make strings   ", t2.Sub(t1))
+		logger.Sugar().Info("Finish make strings   ", t2.Sub(t1))
 	}
 	p.Submit(makestringfunc)
 
 	//生成set
-	logger.Info("start make big set")
+	logger.Sugar().Info("start make big set")
 	setname := prefix + "set_" + commons.RandString(10)
 	bigsetfunc := func() {
 		defer wg.Done()
@@ -63,13 +63,13 @@ func GenerateBase(client *redis.Client, loopstep int64) {
 			client.SAdd(setname, basevalue+strconv.FormatInt(i, 10))
 		}
 		t2 := time.Now()
-		logger.Info("Finish make big set   ", t2.Sub(t1))
+		logger.Sugar().Info("Finish make big set   ", t2.Sub(t1))
 	}
 	wg.Add(1)
 	p.Submit(bigsetfunc)
 
 	//生成hset
-	logger.Info("start make big hashset")
+	logger.Sugar().Info("start make big hashset")
 	hsetname := prefix + "hset_" + commons.RandString(10)
 	makebighsetfunc := func() {
 		defer wg.Done()
@@ -79,13 +79,13 @@ func GenerateBase(client *redis.Client, loopstep int64) {
 		}
 		t2 := time.Now()
 
-		logger.Info("Finis make big hashset   ", t2.Sub(t1))
+		logger.Sugar().Info("Finis make big hashset   ", t2.Sub(t1))
 	}
 	wg.Add(1)
 	p.Submit(makebighsetfunc)
 
 	//生成sortedSet
-	logger.Info("start make big sorted set")
+	logger.Sugar().Info("start make big sorted set")
 	sortedsetname := prefix + "sortedset_" + commons.RandString(8)
 	makebigsortedsetfunc := func() {
 		defer wg.Done()
@@ -99,7 +99,7 @@ func GenerateBase(client *redis.Client, loopstep int64) {
 
 		}
 		t2 := time.Now()
-		logger.Info("finish make big sorted set   ", t2.Sub(t1))
+		logger.Sugar().Info("finish make big sorted set   ", t2.Sub(t1))
 	}
 	wg.Add(1)
 	p.Submit(makebigsortedsetfunc)
@@ -125,9 +125,10 @@ func GenerateIncrement(client *redis.Client) {
 		}
 		client.Expire(appended, 3600*time.Second)
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "append",
-		}).Info(t2.Sub(t1))
+		//logger.WithFields(logrus.Fields{
+		//	"command": "append",
+		//}).Info(t2.Sub(t1))
+		logger.Info("command_append", zap.Duration("", t2.Sub(t1)))
 		wg.Done()
 	}
 	p.Submit(appendfunc)
@@ -152,9 +153,10 @@ func GenerateIncrement(client *redis.Client) {
 		client.BitOpXor(opxorkey, strarry...)
 		client.BitOpNot(opnotkey, strarry[0])
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "bitop",
-		}).Info(t2.Sub(t1))
+		//logger.WithFields(logrus.Fields{
+		//	"command": "bitop",
+		//}).Info(t2.Sub(t1))
+		logger.Info("command_bitop", zap.Duration("", t2.Sub(t1)))
 		wg.Done()
 	}
 	p.Submit(bitopfunc)
@@ -175,9 +177,10 @@ func GenerateIncrement(client *redis.Client) {
 			client.DecrBy(str, rand.Int63n(300))
 		}
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "decr",
-		}).Info(t2.Sub(t1))
+		//logger.WithFields(logrus.Fields{
+		//	"command": "decr",
+		//}).Info(t2.Sub(t1))
+		logger.Info("command_decr", zap.Duration("", t2.Sub(t1)))
 		wg.Done()
 	}
 	p.Submit(decrfunc)
@@ -198,9 +201,10 @@ func GenerateIncrement(client *redis.Client) {
 			client.IncrByFloat(str, rand.Float64())
 		}
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "incr",
-		}).Info(t2.Sub(t1))
+		//logger.WithFields(logrus.Fields{
+		//	"command": "incr",
+		//}).Info(t2.Sub(t1))
+		logger.Info("command_incr", zap.Duration("", t2.Sub(t1)))
 		wg.Done()
 	}
 	p.Submit(incrfunc)
@@ -226,9 +230,10 @@ func GenerateIncrement(client *redis.Client) {
 		client.MSet(msetarry)
 		client.MSetNX(msetarry)
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "mset",
-		}).Info(t2.Sub(t1))
+		//logger.WithFields(logrus.Fields{
+		//	"command": "mset",
+		//}).Info(t2.Sub(t1))
+		logger.Info("command_mset", zap.Duration("", t2.Sub(t1)))
 		wg.Done()
 	}
 	p.Submit(msetfunc)
@@ -243,9 +248,10 @@ func GenerateIncrement(client *redis.Client) {
 			client.Do("psetex", psetexkey, 3600000, psetexbaseval+strconv.Itoa(i))
 		}
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "psetex",
-		}).Info(t2.Sub(t1))
+		//logger.WithFields(logrus.Fields{
+		//	"command": "psetex",
+		//}).Info(t2.Sub(t1))
+		logger.Info("command_psetex", zap.Duration("", t2.Sub(t1)))
 		wg.Done()
 	}
 	p.Submit(psetnexfuc)
@@ -259,10 +265,10 @@ func GenerateIncrement(client *redis.Client) {
 			client.Do("setex", setexkey, 3600, setexkey)
 		}
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "setex",
-		}).Info(t2.Sub(t1))
-
+		//logger.WithFields(logrus.Fields{
+		//	"command": "setex",
+		//}).Info(t2.Sub(t1))
+		logger.Info("command_setex", zap.Duration("", t2.Sub(t1)))
 		wg.Done()
 	}
 	p.Submit(setexfunc)
@@ -277,9 +283,10 @@ func GenerateIncrement(client *redis.Client) {
 			client.Set(setkey, setbaseval+strconv.Itoa(i), time.Duration(3600*time.Second))
 		}
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "set",
-		}).Info(t2.Sub(t1))
+		//logger.WithFields(logrus.Fields{
+		//	"command": "set",
+		//}).Info(t2.Sub(t1))
+		logger.Info("command_set", zap.Duration("", t2.Sub(t1)))
 		wg.Done()
 	}
 	p.Submit(setfunc)
@@ -293,9 +300,10 @@ func GenerateIncrement(client *redis.Client) {
 			client.SetNX(setnxkey, setnxkey, time.Duration(3600*time.Second))
 		}
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "setnx",
-		}).Info(t2.Sub(t1))
+		//logger.WithFields(logrus.Fields{
+		//	"command": "setnx",
+		//}).Info(t2.Sub(t1))
+		logger.Info("command_setnx", zap.Duration("", t2.Sub(t1)))
 		wg.Done()
 	}
 	p.Submit(setnxfunc)
@@ -309,9 +317,10 @@ func GenerateIncrement(client *redis.Client) {
 			client.SetBit(setbitkey, rand.Int63n(100), rand.Intn(1))
 		}
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "setbit",
-		}).Info(t2.Sub(t1))
+		//logger.WithFields(logrus.Fields{
+		//	"command": "setbit",
+		//}).Info(t2.Sub(t1))
+		logger.Info("command_setbit", zap.Duration("", t2.Sub(t1)))
 		wg.Done()
 	}
 	p.Submit(setbitfunc)
@@ -328,9 +337,10 @@ func GenerateIncrement(client *redis.Client) {
 			strarry = append(strarry, setrangekey)
 		}
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "setrange",
-		}).Info(t2.Sub(t1))
+		//logger.WithFields(logrus.Fields{
+		//	"command": "setrange",
+		//}).Info(t2.Sub(t1))
+		logger.Info("command_setrange", zap.Duration("", t2.Sub(t1)))
 		wg.Done()
 	}
 	p.Submit(setrangefunc)
@@ -343,9 +353,10 @@ func GenerateIncrement(client *redis.Client) {
 			client.HIncrBy("HINCRBY_"+strconv.Itoa(i), "page_view", rand.Int63n(100))
 		}
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "hincrby",
-		}).Info(t2.Sub(t1))
+		//logger.WithFields(logrus.Fields{
+		//	"command": "hincrby",
+		//}).Info(t2.Sub(t1))
+		logger.Info("command_hincrby", zap.Duration("", t2.Sub(t1)))
 		wg.Done()
 	}
 	p.Submit(hicrbyfunc)
@@ -358,9 +369,10 @@ func GenerateIncrement(client *redis.Client) {
 			client.HIncrByFloat("HINCRBY_"+commons.RandString(4), "page_view", rand.Float64())
 		}
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "hincrbyfloat",
-		}).Info(t2.Sub(t1))
+		//logger.WithFields(logrus.Fields{
+		//	"command": "hincrbyfloat",
+		//}).Info(t2.Sub(t1))
+		logger.Info("command_hincrbyfloat", zap.Duration("", t2.Sub(t1)))
 		wg.Done()
 	}
 	p.Submit(hincrbyfloatfunc)
@@ -376,9 +388,10 @@ func GenerateIncrement(client *redis.Client) {
 		}
 		client.HMSet("hmset_"+commons.RandString(4), fieldmap)
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "hmset",
-		}).Info(t2.Sub(t1))
+		//logger.WithFields(logrus.Fields{
+		//	"command": "hmset",
+		//}).Info(t2.Sub(t1))
+		logger.Info("command_hmset", zap.Duration("", t2.Sub(t1)))
 		wg.Done()
 	}
 	p.Submit(hmsetfunc)
@@ -394,9 +407,10 @@ func GenerateIncrement(client *redis.Client) {
 			client.HSetNX(basekey, basefield+strconv.Itoa(i), basefield)
 		}
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "hsetnx",
-		}).Info(t2.Sub(t1))
+		//logger.WithFields(logrus.Fields{
+		//	"command": "hsetnx",
+		//}).Info(t2.Sub(t1))
+		logger.Info("command_hsetnx", zap.Duration("", t2.Sub(t1)))
 
 	}
 	p.Submit(hsetnxfunc)
@@ -413,10 +427,10 @@ func GenerateIncrement(client *redis.Client) {
 
 		client.LPush("lpush_"+commons.RandString(4), values...)
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "lpush",
-		}).Info(t2.Sub(t1))
-
+		//logger.WithFields(logrus.Fields{
+		//	"command": "lpush",
+		//}).Info(t2.Sub(t1))
+		logExecDuration("command_lpush", t2.Sub(t1))
 	}
 	p.Submit(lpushfunc)
 
@@ -443,9 +457,10 @@ func GenerateIncrement(client *redis.Client) {
 		}
 
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "lpop",
-		}).Info(t2.Sub(t1))
+		//logger.WithFields(logrus.Fields{
+		//	"command": "lpop",
+		//}).Info(t2.Sub(t1))
+		logExecDuration("command_lpop", t2.Sub(t1))
 	}
 	p.Submit(lpopfunc)
 
@@ -462,9 +477,10 @@ func GenerateIncrement(client *redis.Client) {
 
 		client.LPushX(basekey, values)
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "lpushx",
-		}).Info(t2.Sub(t1))
+		//logger.WithFields(logrus.Fields{
+		//	"command": "lpushx",
+		//}).Info(t2.Sub(t1))
+		logExecDuration("command_lpushx", t2.Sub(t1))
 	}
 	p.Submit(lpushxfunc)
 
@@ -482,9 +498,10 @@ func GenerateIncrement(client *redis.Client) {
 			client.LRem(basekey, 0, rand.Intn(20))
 		}
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "lrem",
-		}).Info(t2.Sub(t1))
+		//logger.WithFields(logrus.Fields{
+		//	"command": "lrem",
+		//}).Info(t2.Sub(t1))
+		logExecDuration("command_lrem", t2.Sub(t1))
 	}
 	p.Submit(lremfunc)
 
@@ -502,9 +519,10 @@ func GenerateIncrement(client *redis.Client) {
 			client.LSet(basekey, rand.Int63n(49), commons.RandString(4))
 		}
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "lset",
-		}).Info(t2.Sub(t1))
+		//logger.WithFields(logrus.Fields{
+		//	"command": "lset",
+		//}).Info(t2.Sub(t1))
+		logExecDuration("command_lset", t2.Sub(t1))
 	}
 	p.Submit(lsetfunc)
 
@@ -529,9 +547,10 @@ func GenerateIncrement(client *redis.Client) {
 			client.LTrim(v, rand.Int63n(49), rand.Int63n(49))
 		}
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "ltrim",
-		}).Info(t2.Sub(t1))
+		//logger.WithFields(logrus.Fields{
+		//	"command": "ltrim",
+		//}).Info(t2.Sub(t1))
+		logExecDuration("command_ltrim", t2.Sub(t1))
 	}
 	p.Submit(ltrimfunc)
 
@@ -558,9 +577,10 @@ func GenerateIncrement(client *redis.Client) {
 		}
 
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "linsert",
-		}).Info(t2.Sub(t1))
+		//logger.WithFields(logrus.Fields{
+		//	"command": "linsert",
+		//}).Info(t2.Sub(t1))
+		logExecDuration("command_linsert", t2.Sub(t1))
 	}
 	p.Submit(linsertfunc)
 
@@ -585,9 +605,10 @@ func GenerateIncrement(client *redis.Client) {
 			client.RPop(v)
 		}
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "rpop",
-		}).Info(t2.Sub(t1))
+		//logger.WithFields(logrus.Fields{
+		//	"command": "rpop",
+		//}).Info(t2.Sub(t1))
+		logExecDuration("command_rpop", t2.Sub(t1))
 	}
 	p.Submit(lrpopfunc)
 
@@ -614,9 +635,10 @@ func GenerateIncrement(client *redis.Client) {
 		}
 
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "rpoplpush",
-		}).Info(t2.Sub(t1))
+		//logger.WithFields(logrus.Fields{
+		//	"command": "rpoplpush",
+		//}).Info(t2.Sub(t1))
+		logExecDuration("command_rpoplpush", t2.Sub(t1))
 	}
 	p.Submit(rpoplpushfunc)
 
@@ -633,9 +655,10 @@ func GenerateIncrement(client *redis.Client) {
 
 		client.RPushX(basekey, values)
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "rpushx",
-		}).Info(t2.Sub(t1))
+		//logger.WithFields(logrus.Fields{
+		//	"command": "rpushx",
+		//}).Info(t2.Sub(t1))
+		logExecDuration("command_rpushx", t2.Sub(t1))
 	}
 	p.Submit(rpushxfunc)
 
@@ -658,9 +681,10 @@ func GenerateIncrement(client *redis.Client) {
 		client.BLPop(5*time.Second, keys...)
 
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "blpop",
-		}).Info(t2.Sub(t1))
+		//logger.WithFields(logrus.Fields{
+		//	"command": "blpop",
+		//}).Info(t2.Sub(t1))
+		logExecDuration("command_blpop", t2.Sub(t1))
 	}
 	p.Submit(blpopfunc)
 
@@ -683,9 +707,10 @@ func GenerateIncrement(client *redis.Client) {
 		client.BRPop(5*time.Second, keys...)
 
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "brpop",
-		}).Info(t2.Sub(t1))
+		//logger.WithFields(logrus.Fields{
+		//	"command": "brpop",
+		//}).Info(t2.Sub(t1))
+		logExecDuration("command_brpop", t2.Sub(t1))
 	}
 	p.Submit(brpopfunc)
 
@@ -712,9 +737,10 @@ func GenerateIncrement(client *redis.Client) {
 		}
 
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "brpoplpush",
-		}).Info(t2.Sub(t1))
+		//logger.WithFields(logrus.Fields{
+		//	"command": "brpoplpush",
+		//}).Info(t2.Sub(t1))
+		logExecDuration("command_brpoplpush", t2.Sub(t1))
 	}
 	p.Submit(brpoplpushfunc)
 
@@ -728,9 +754,10 @@ func GenerateIncrement(client *redis.Client) {
 			client.SAdd(basekey, basekey+strconv.Itoa(i))
 		}
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "sadd",
-		}).Info(t2.Sub(t1))
+		//logger.WithFields(logrus.Fields{
+		//	"command": "sadd",
+		//}).Info(t2.Sub(t1))
+		logExecDuration("command_sadd", t2.Sub(t1))
 	}
 	p.Submit(saddfunc)
 
@@ -748,9 +775,10 @@ func GenerateIncrement(client *redis.Client) {
 		}
 		client.SDiffStore(basekey+commons.RandString(2), keys...)
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "sdiffstore",
-		}).Info(t2.Sub(t1))
+		//logger.WithFields(logrus.Fields{
+		//	"command": "sdiffstore",
+		//}).Info(t2.Sub(t1))
+		logExecDuration("command_sdiffstore", t2.Sub(t1))
 	}
 	p.Submit(sdiffstorefunc)
 
@@ -768,9 +796,10 @@ func GenerateIncrement(client *redis.Client) {
 		}
 		client.SDiffStore(basekey+commons.RandString(2), keys...)
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "sinsertstore",
-		}).Info(t2.Sub(t1))
+		//logger.WithFields(logrus.Fields{
+		//	"command": "sinsertstore",
+		//}).Info(t2.Sub(t1))
+		logExecDuration("command_sinsertstore", t2.Sub(t1))
 	}
 	p.Submit(sinsertstorefunc)
 
@@ -791,9 +820,10 @@ func GenerateIncrement(client *redis.Client) {
 		}
 
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "smove",
-		}).Info(t2.Sub(t1))
+		//logger.WithFields(logrus.Fields{
+		//	"command": "smove",
+		//}).Info(t2.Sub(t1))
+		logExecDuration("command_smove", t2.Sub(t1))
 	}
 	p.Submit(smovefunc)
 
@@ -814,9 +844,10 @@ func GenerateIncrement(client *redis.Client) {
 		}
 
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "spop",
-		}).Info(t2.Sub(t1))
+		//logger.WithFields(logrus.Fields{
+		//	"command": "spop",
+		//}).Info(t2.Sub(t1))
+		logExecDuration("command_spop", t2.Sub(t1))
 	}
 	p.Submit(spopfunc)
 
@@ -837,9 +868,10 @@ func GenerateIncrement(client *redis.Client) {
 		}
 
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "srem",
-		}).Info(t2.Sub(t1))
+		//logger.WithFields(logrus.Fields{
+		//	"command": "srem",
+		//}).Info(t2.Sub(t1))
+		logExecDuration("command_srem", t2.Sub(t1))
 	}
 	p.Submit(sremfunc)
 
@@ -857,9 +889,10 @@ func GenerateIncrement(client *redis.Client) {
 		}
 		client.SUnionStore(basekey, keys...)
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "sunionstore",
-		}).Info(t2.Sub(t1))
+		//logger.WithFields(logrus.Fields{
+		//	"command": "sunionstore",
+		//}).Info(t2.Sub(t1))
+		logExecDuration("command_sunionstore", t2.Sub(t1))
 	}
 	p.Submit(sunionstorefunc)
 
@@ -881,9 +914,10 @@ func GenerateIncrement(client *redis.Client) {
 		client.ZAdd(basekey, members...)
 
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "zadd",
-		}).Info(t2.Sub(t1))
+		//logger.WithFields(logrus.Fields{
+		//	"command": "zadd",
+		//}).Info(t2.Sub(t1))
+		logExecDuration("command_zadd", t2.Sub(t1))
 	}
 	p.Submit(zaddfunc)
 
@@ -908,9 +942,10 @@ func GenerateIncrement(client *redis.Client) {
 		}
 
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "zincrby",
-		}).Info(t2.Sub(t1))
+		//logger.WithFields(logrus.Fields{
+		//	"command": "zincrby",
+		//}).Info(t2.Sub(t1))
+		logExecDuration("command_zincrby", t2.Sub(t1))
 	}
 	p.Submit(zincrbyfunc)
 
@@ -935,9 +970,10 @@ func GenerateIncrement(client *redis.Client) {
 		}
 
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "zrem",
-		}).Info(t2.Sub(t1))
+		//logger.WithFields(logrus.Fields{
+		//	"command": "zrem",
+		//}).Info(t2.Sub(t1))
+		logExecDuration("command_zrem", t2.Sub(t1))
 	}
 	p.Submit(zremfunc)
 
@@ -960,9 +996,10 @@ func GenerateIncrement(client *redis.Client) {
 		client.ZRemRangeByRank(basekey, rand.Int63n(10), rand.Int63n(50))
 
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "zremrangebyrank",
-		}).Info(t2.Sub(t1))
+		//logger.WithFields(logrus.Fields{
+		//	"command": "zremrangebyrank",
+		//}).Info(t2.Sub(t1))
+		logExecDuration("command_zremrangebyrank", t2.Sub(t1))
 	}
 	p.Submit(zremrangebyrankfunc)
 
@@ -985,9 +1022,10 @@ func GenerateIncrement(client *redis.Client) {
 		client.ZRemRangeByScore(basekey, "10", "20")
 
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "zremrangebyscore",
-		}).Info(t2.Sub(t1))
+		//logger.WithFields(logrus.Fields{
+		//	"command": "zremrangebyscore",
+		//}).Info(t2.Sub(t1))
+		logExecDuration("command_zremrangebyscore", t2.Sub(t1))
 	}
 	p.Submit(zremrangebyscorefunc)
 
@@ -1018,9 +1056,10 @@ func GenerateIncrement(client *redis.Client) {
 		client.ZUnionStore(basekey+commons.RandString(2), &zstore)
 
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "zunionstore",
-		}).Info(t2.Sub(t1))
+		//logger.WithFields(logrus.Fields{
+		//	"command": "zunionstore",
+		//}).Info(t2.Sub(t1))
+		logExecDuration("command_zunionstore", t2.Sub(t1))
 	}
 	p.Submit(zunionstorefunc)
 
@@ -1051,9 +1090,10 @@ func GenerateIncrement(client *redis.Client) {
 		client.ZInterStore(basekey+commons.RandString(2), &zstore)
 
 		t2 := time.Now()
-		logger.WithFields(logrus.Fields{
-			"command": "zinterstore",
-		}).Info(t2.Sub(t1))
+		//logger.WithFields(logrus.Fields{
+		//	"command": "zinterstore",
+		//}).Info(t2.Sub(t1))
+		logExecDuration("command_zinterstore", t2.Sub(t1))
 	}
 	p.Submit(zinterstorefunc)
 
@@ -1061,10 +1101,6 @@ func GenerateIncrement(client *redis.Client) {
 
 }
 
-func PushList(client *redis.Client, listname string, str string) {
-	client.LPush(listname, str)
-}
-
-func Hset(client *redis.Client, key string, field string, value interface{}) {
-	client.HSet(key, field, value)
+func logExecDuration(msg string, duration time.Duration) {
+	logger.Info(msg, zap.Duration("", duration))
 }

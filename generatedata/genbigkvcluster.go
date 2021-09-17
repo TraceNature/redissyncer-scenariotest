@@ -12,7 +12,7 @@ import (
 type GenBigKVCluster struct {
 	RedisClusterClient *redis.ClusterClient
 	KeySuffix          string
-	Loopstep           int //生成数据的循环次数
+	Length             int //生成数据的循环次数
 	EXPIRE             time.Duration
 	DB                 int
 	ValuePrefix        string
@@ -21,7 +21,7 @@ type GenBigKVCluster struct {
 func (gbkv *GenBigKVCluster) GenBigHash() string {
 	t1 := time.Now()
 	key := "BigHash_" + gbkv.KeySuffix
-	for i := 0; i < gbkv.Loopstep; i++ {
+	for i := 0; i < gbkv.Length; i++ {
 		gbkv.RedisClusterClient.HSet(key, key+strconv.Itoa(i), gbkv.ValuePrefix+strconv.Itoa(i))
 	}
 	gbkv.RedisClusterClient.Expire(key, gbkv.EXPIRE)
@@ -34,7 +34,7 @@ func (gbkv *GenBigKVCluster) GenBigHash() string {
 func (gbkv *GenBigKVCluster) GenBigList() string {
 	t1 := time.Now()
 	key := "BigList_" + gbkv.KeySuffix
-	for i := 0; i < gbkv.Loopstep; i++ {
+	for i := 0; i < gbkv.Length; i++ {
 		gbkv.RedisClusterClient.LPush(key, gbkv.ValuePrefix+strconv.Itoa(i))
 	}
 	gbkv.RedisClusterClient.Expire(key, gbkv.EXPIRE)
@@ -47,7 +47,7 @@ func (gbkv *GenBigKVCluster) GenBigList() string {
 func (gbkv *GenBigKVCluster) GenBigSet() string {
 	t1 := time.Now()
 	key := "BigSet_" + gbkv.KeySuffix
-	for i := 0; i < gbkv.Loopstep; i++ {
+	for i := 0; i < gbkv.Length; i++ {
 		gbkv.RedisClusterClient.SAdd(key, gbkv.ValuePrefix+strconv.Itoa(i))
 	}
 	gbkv.RedisClusterClient.Expire(key, gbkv.EXPIRE)
@@ -59,7 +59,7 @@ func (gbkv *GenBigKVCluster) GenBigSet() string {
 func (gbkv *GenBigKVCluster) GenBigZset() string {
 	t1 := time.Now()
 	key := "BigZset_" + gbkv.KeySuffix
-	for i := 0; i < gbkv.Loopstep; i++ {
+	for i := 0; i < gbkv.Length; i++ {
 		member := &redis.Z{
 			Score:  rand.Float64(),
 			Member: gbkv.ValuePrefix + strconv.Itoa(i),
@@ -75,7 +75,7 @@ func (gbkv *GenBigKVCluster) GenBigZset() string {
 func (gbkv *GenBigKVCluster) GenBigString() {
 	t1 := time.Now()
 	key := "BigString_" + gbkv.KeySuffix
-	for i := 0; i < gbkv.Loopstep; i++ {
+	for i := 0; i < gbkv.Length; i++ {
 		gbkv.RedisClusterClient.Set(key+strconv.Itoa(i), gbkv.ValuePrefix+strconv.Itoa(i), gbkv.EXPIRE)
 	}
 	t2 := time.Now()
