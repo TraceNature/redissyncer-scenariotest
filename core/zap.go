@@ -15,6 +15,23 @@ import (
 var level zapcore.Level
 
 func Zap() (logger  *zap.Logger) {
+	//ToDo 增加zap 参数默认值，当globale viper == nil，使用默认值
+	//zipConfig := config.Zap{
+	//	Level:         "info",
+	//	Format:        "console",
+	//	Prefix:        "[RedissyncerT]",
+	//	Director:      "log",
+	//	LinkName:      "latest_log",
+	//	ShowLine:      true,
+	//	EncodeLevel:   "LowercaseColorLevelEncoder",
+	//	StacktraceKey: "stacktrace",
+	//	LogInConsole:  true,
+	//}
+	//
+	//if global.RSPConfig != nil {
+	//	zipConfig = global.RSPConfig.Zap
+	//}
+
 	if ok, _ := utils.PathExists(global.RSPConfig.Zap.Director); !ok { // 判断是否有Director文件夹
 		if !path.IsAbs(global.RSPConfig.Zap.Director) {
 			dir, err := filepath.Abs(filepath.Dir(os.Args[0]))

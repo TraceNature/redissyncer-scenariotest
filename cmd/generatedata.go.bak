@@ -15,7 +15,10 @@ limitations under the License.
 */
 package cmd
 
-import "github.com/spf13/cobra"
+import (
+	"github.com/spf13/cobra"
+	"testcase/global"
+)
 
 import (
 	"fmt"
@@ -53,7 +56,7 @@ to quickly create a Cobra application.`,
 		_, err := client.Ping().Result()
 
 		if err != nil {
-			logger.Sugar().Error(err)
+			global.RSPLog.Sugar().Error(err)
 			os.Exit(1)
 		}
 

@@ -7,12 +7,13 @@ import (
 	"io/ioutil"
 	"os"
 	"runtime"
-	"testcase/globalzap"
+	"testcase/global"
+	//"testcase/globalzap"
 	"testcase/synctaskhandle"
 	"time"
 )
 
-var logger = globalzap.GetLogger() //logger.Println(err)
+var logger = global.RSPLog
 
 type CaseType int32
 

@@ -7,6 +7,7 @@ import (
 	"strings"
 	"testcase/cases"
 	"testcase/commons"
+	"testcase/global"
 )
 
 // execcaseCmd represents the execcase command
@@ -24,7 +25,7 @@ to quickly create a Cobra application.`,
 
 		filepath, err := cmd.Flags().GetString("filepath")
 		if err != nil {
-			logger.Sugar().Error(err)
+			global.RSPLog.Sugar().Error(err)
 			return
 		}
 
@@ -38,23 +39,23 @@ to quickly create a Cobra application.`,
 
 		dir, err := cmd.Flags().GetString("yamldir")
 		if err != nil {
-			logger.Sugar().Error(err)
+			global.RSPLog.Sugar().Error(err)
 			return
 		}
 
 		if !commons.FileExists(dir) {
-			logger.Sugar().Error(errors.New("Director not exists"))
+			global.RSPLog.Sugar().Error(errors.New("Director not exists"))
 			return
 		}
 
 		if !commons.IsDir(dir) {
-			logger.Sugar().Error(errors.New("Path not Director "))
+			global.RSPLog.Sugar().Error(errors.New("Path not Director "))
 			return
 		}
 
 		files, err := commons.GetAllFiles(dir)
 		if err != nil {
-			logger.Sugar().Error(err)
+			global.RSPLog.Sugar().Error(err)
 			return
 		}
 

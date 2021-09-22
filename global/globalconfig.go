@@ -1,10 +1,10 @@
 package global
 
 import (
-	"testcase/config"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"sync"
+	"testcase/config"
 )
 
 var (

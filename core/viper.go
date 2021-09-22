@@ -4,10 +4,12 @@ package core
 
 import (
 	"fmt"
+	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
 	"os"
 	"path/filepath"
 	"testcase/commons"
+	"testcase/global"
 )
 
 func Viper(path ...string) *viper.Viper {
@@ -48,6 +50,17 @@ func Viper(path ...string) *viper.Viper {
 		panic(fmt.Errorf("Fatal error config file: %s \n", err))
 	}
 	v.WatchConfig()
+
+	v.OnConfigChange(func(e fsnotify.Event) {
+		fmt.Println("config file changed:", e.Name)
+		if err := v.Unmarshal(&global.RSPConfig); err != nil {
+			fmt.Println(err)
+		}
+	})
+
+	if err := v.Unmarshal(&global.RSPConfig); err != nil {
+		fmt.Println(err)
+	}
 
 	return v
 }

@@ -2,30 +2,24 @@
 package cmd
 
 import (
-	//"encoding/json"
-	//"github.com/tidwall/gjson"
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"go.uber.org/zap"
 	"io/ioutil"
 	"log"
-	"testcase/core"
-	"testcase/global"
-	"testcase/globalzap"
+	//"testcase/globalzap"
 	"testcase/synctaskhandle"
 
-	//"io/ioutil"
 	"os"
-	//"testcase/synctaskhandle"
 )
 
 var cfgFile string
-var logger *zap.Logger
-var Viper *viper.Viper
+
+//var logger *zap.Logger
+//var Viper *viper.Viper
 
 func init() {
-	logger = globalzap.GetLogger()
+	//logger = global.RSPLog
 }
 
 // rootCmd represents the base command when called without any subcommands
@@ -80,36 +74,36 @@ func Execute() {
 func init() {
 
 	cobra.OnInitialize(initConfig)
-	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file (default is $HOME/config.yml)")
-	rootCmd.MarkFlagRequired("config")
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	//rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file (default is $HOME/config.yml)")
+	//rootCmd.MarkFlagRequired("config")
+	//rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
 }
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-	if cfgFile != "" {
-		// Use config file from the flag.
-		//core.RSPViper.SetConfigFile(cfgFile)
-		global.RSPViper = core.Viper(cfgFile)
-	} else {
-		// Find home directory.
-		//core.RSPViper.AddConfigPath(".")
-		//core.RSPViper.SetConfigName("config.yml")
-		global.RSPViper = core.Viper()
-	}
-
-	global.RSPViper.AutomaticEnv() // read in environment variables that match
-
-	// If a config file is found, read it in.
-	if err := global.RSPViper.ReadInConfig(); err == nil {
-
-		if global.RSPViper.GetBool("logjsonformat") {
-
-		}
-	} else {
-		logger.Sugar().Error(err)
-		os.Exit(1)
-	}
+	//if cfgFile != "" {
+	//	// Use config file from the flag.
+	//	//core.RSPViper.SetConfigFile(cfgFile)
+	//	global.RSPViper = core.Viper(cfgFile)
+	//} else {
+	//	// Find home directory.
+	//	//core.RSPViper.AddConfigPath(".")
+	//	//core.RSPViper.SetConfigName("config.yml")
+	//	global.RSPViper = core.Viper()
+	//}
+	//
+	//global.RSPViper.AutomaticEnv() // read in environment variables that match
+	//
+	//// If a config file is found, read it in.
+	//if err := global.RSPViper.ReadInConfig(); err == nil {
+	//
+	//	if global.RSPViper.GetBool("logjsonformat") {
+	//
+	//	}
+	//} else {
+	//	logger.Sugar().Error(err)
+	//	os.Exit(1)
+	//}
 
 }

@@ -9,11 +9,12 @@ import (
 	"math/rand"
 	"strconv"
 	"strings"
-	"testcase/globalzap"
+	"testcase/global"
+	//"testcase/globalzap"
 	"time"
 )
 
-var zaplogger = globalzap.GetLogger()
+var zaplogger = global.RSPLog
 
 type OptSingle struct {
 	RedisConn    *redis.Conn
@@ -118,7 +119,7 @@ func (optsingle *OptSingle) BO_SELECT(db int) {
 
 	_, err := optsingle.RedisConn.Select(db).Result()
 	if err != nil {
-		zaplogger.Sugar().Error(err)
+		global.RSPLog.Sugar().Error(err)
 		return
 	}
 	optsingle.DB = db
@@ -134,7 +135,7 @@ func (optsingle *OptSingle) BO_APPEND() {
 	}
 	optsingle.RedisConn.Expire(appended, optsingle.EXPIRE)
 	t2 := time.Now()
-	zaplogger.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "APPEND"), zap.String("key", appended), zap.Int64("time", t2.Sub(t1).Milliseconds()))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "APPEND"), zap.String("key", appended), zap.Int64("time", t2.Sub(t1).Milliseconds()))
 
 }
 
@@ -162,7 +163,7 @@ func (optsingle *OptSingle) BO_BITOP() {
 	optsingle.RedisConn.Expire(opxorkey, optsingle.EXPIRE)
 	optsingle.RedisConn.Expire(opnotkey, optsingle.EXPIRE)
 	t2 := time.Now()
-	zaplogger.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "BITOP"), zap.Any("keys", []string{opandkey, oporkey, opxorkey, opnotkey}), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "BITOP"), zap.Any("keys", []string{opandkey, oporkey, opxorkey, opnotkey}), zap.Duration("time", t2.Sub(t1)))
 }
 
 //DECR and DECRBY
@@ -174,7 +175,7 @@ func (optsingle *OptSingle) BO_DECR_DECRBY() {
 	optsingle.RedisConn.DecrBy(desckey, rand.Int63n(int64(optsingle.Loopstep)))
 	t2 := time.Now()
 
-	zaplogger.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "DECR_DECRBY"), zap.String("key", desckey), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "DECR_DECRBY"), zap.String("key", desckey), zap.Duration("time", t2.Sub(t1)))
 }
 
 //INCR and INCRBY and INCRBYFLOAT
@@ -186,7 +187,7 @@ func (optsingle *OptSingle) BO_INCR_INCRBY_INCRBYFLOAT() {
 	optsingle.RedisConn.IncrBy(incrkey, rand.Int63n(int64(optsingle.Loopstep)))
 	optsingle.RedisConn.IncrByFloat(incrkey, rand.Float64()*float64(rand.Intn(optsingle.Loopstep)))
 	t2 := time.Now()
-	zaplogger.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "INCR_INCRBY_INCRBYFLOAT"), zap.String("key", incrkey), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "INCR_INCRBY_INCRBYFLOAT"), zap.String("key", incrkey), zap.Duration("time", t2.Sub(t1)))
 }
 
 //MSET and MSETNX
@@ -215,7 +216,7 @@ func (optsingle *OptSingle) BO_MSET_MSETNX() {
 	}
 
 	t2 := time.Now()
-	zaplogger.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "MGET_MSETNX"), zap.String("KeySuffix", optsingle.KeySuffix), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "MGET_MSETNX"), zap.String("KeySuffix", optsingle.KeySuffix), zap.Duration("time", t2.Sub(t1)))
 }
 
 ////PSETEX and SETEX
@@ -241,7 +242,7 @@ func (optsingle *OptSingle) BO_PFADD() {
 		optsingle.RedisConn.PFAdd(pfaddkey, rand.Float64()*float64(rand.Int()))
 	}
 	t2 := time.Now()
-	zaplogger.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "BO_PFADD"), zap.String("KeySuffix", optsingle.KeySuffix), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "BO_PFADD"), zap.String("KeySuffix", optsingle.KeySuffix), zap.Duration("time", t2.Sub(t1)))
 }
 
 //PFMERGE
@@ -262,7 +263,7 @@ func (optsingle *OptSingle) BO_PFMERGE() {
 		optsingle.RedisConn.Del(v)
 	}
 	t2 := time.Now()
-	zaplogger.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "BO_PFMERGE"), zap.String("KeySuffix", optsingle.KeySuffix), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "BO_PFMERGE"), zap.String("KeySuffix", optsingle.KeySuffix), zap.Duration("time", t2.Sub(t1)))
 }
 
 //SET and SETNX
@@ -274,7 +275,7 @@ func (optsingle *OptSingle) BO_SET_SETNX() {
 	optsingle.RedisConn.SetNX(setnxkey, setnxkey, optsingle.EXPIRE)
 	optsingle.RedisConn.SetNX(setnxkey, setkey, optsingle.EXPIRE)
 	t2 := time.Now()
-	zaplogger.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "SET_SETNX"), zap.String("KeySuffix", optsingle.KeySuffix), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "SET_SETNX"), zap.String("KeySuffix", optsingle.KeySuffix), zap.Duration("time", t2.Sub(t1)))
 }
 
 //SETBIT
@@ -285,7 +286,7 @@ func (optsingle *OptSingle) BO_SETBIT() {
 	optsingle.RedisConn.Expire(setbitkey, optsingle.EXPIRE)
 
 	t2 := time.Now()
-	zaplogger.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "SETBIT"), zap.String("KeySuffix", optsingle.KeySuffix), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "SETBIT"), zap.String("KeySuffix", optsingle.KeySuffix), zap.Duration("time", t2.Sub(t1)))
 }
 
 //SETRANGE
@@ -295,7 +296,7 @@ func (optsingle *OptSingle) BO_SETRANGE() {
 	optsingle.RedisConn.Set(setrangekey, setrangekey, optsingle.EXPIRE)
 	optsingle.RedisConn.SetRange(setrangekey, rand.Int63n(int64(optsingle.Loopstep)), strconv.Itoa(rand.Intn(optsingle.Loopstep)))
 	t2 := time.Now()
-	zaplogger.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "SETRANGE"), zap.String("KeySuffix", optsingle.KeySuffix), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "SETRANGE"), zap.String("KeySuffix", optsingle.KeySuffix), zap.Duration("time", t2.Sub(t1)))
 }
 
 //HINCRBY and HINCRBYFLOAT
@@ -308,7 +309,7 @@ func (optsingle *OptSingle) BO_HINCRBY_HINCRBYFLOAT() {
 		optsingle.RedisConn.HIncrByFloat(hincrbyfloatkey, hincrbyfloatkey+strconv.Itoa(rand.Intn(optsingle.Loopstep)), rand.Float64()*10)
 	}
 	t2 := time.Now()
-	zaplogger.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "HINCRBY_HINCRBYFLOAT"), zap.String("KeySuffix", optsingle.KeySuffix), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "HINCRBY_HINCRBYFLOAT"), zap.String("KeySuffix", optsingle.KeySuffix), zap.Duration("time", t2.Sub(t1)))
 }
 
 //HSET HMSET HSETNX HDEL
@@ -344,7 +345,7 @@ func (optsingle *OptSingle) BO_HSET_HMSET_HSETNX() {
 	optsingle.RedisConn.Expire(hsetkey, optsingle.EXPIRE)
 	optsingle.RedisConn.Expire(hmsetkey, optsingle.EXPIRE)
 	t2 := time.Now()
-	zaplogger.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "HSET_HMSET_HSETNX_HDEL"), zap.String("KeySuffix", optsingle.KeySuffix), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "HSET_HMSET_HSETNX_HDEL"), zap.String("KeySuffix", optsingle.KeySuffix), zap.Duration("time", t2.Sub(t1)))
 }
 
 //LPUSH and LPOP and LPUSHX and LSET
@@ -374,7 +375,7 @@ func (optsingle *OptSingle) BO_LPUSH_LPOP_LPUSHX() {
 
 	optsingle.RedisConn.Expire(lpushkey, optsingle.EXPIRE)
 	t2 := time.Now()
-	zaplogger.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "LPUSH_LPOP_LPUSHX_LSET"), zap.String("KeySuffix", optsingle.KeySuffix), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "LPUSH_LPOP_LPUSHX_LSET"), zap.String("KeySuffix", optsingle.KeySuffix), zap.Duration("time", t2.Sub(t1)))
 
 }
 
@@ -405,7 +406,7 @@ func (optsingle *OptSingle) BO_LREM_LTRIM_LINSERT() {
 	optsingle.RedisConn.Expire(lremkey, optsingle.EXPIRE)
 	optsingle.RedisConn.Expire(ltrimkey, optsingle.EXPIRE)
 	t2 := time.Now()
-	zaplogger.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "LREM_TRIM_LINSERT"), zap.String("KeySuffix", optsingle.KeySuffix), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "LREM_TRIM_LINSERT"), zap.String("KeySuffix", optsingle.KeySuffix), zap.Duration("time", t2.Sub(t1)))
 }
 
 //RPUSH RPUSHX RPOP RPOPLPUSH
@@ -438,7 +439,7 @@ func (optsingle *OptSingle) BO_RPUSH_RPUSHX_RPOP_RPOPLPUSH() {
 	optsingle.RedisConn.Expire(rpushxkey, optsingle.EXPIRE)
 
 	t2 := time.Now()
-	zaplogger.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "BO_RPUSH_RPUSHX_RPOP_RPOPLPUSH"), zap.String("KeySuffix", optsingle.KeySuffix), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "BO_RPUSH_RPUSHX_RPOP_RPOPLPUSH"), zap.String("KeySuffix", optsingle.KeySuffix), zap.Duration("time", t2.Sub(t1)))
 }
 
 //BLPOP BRPOP BRPOPLPUSH
@@ -472,7 +473,7 @@ func (optsingle *OptSingle) BO_BLPOP_BRPOP_BRPOPLPUSH() {
 	optsingle.RedisConn.Expire(blpopkey, optsingle.EXPIRE)
 	optsingle.RedisConn.Expire(brpopkey, optsingle.EXPIRE)
 	t2 := time.Now()
-	zaplogger.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "BO_BLPOP_BRPOP"), zap.String("KeySuffix", optsingle.KeySuffix), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "BO_BLPOP_BRPOP"), zap.String("KeySuffix", optsingle.KeySuffix), zap.Duration("time", t2.Sub(t1)))
 }
 
 //SADD SMOVE SPOP SREM
@@ -514,7 +515,7 @@ func (optsingle *OptSingle) BO_SADD_SMOVE_SPOP_SREM() {
 	optsingle.RedisConn.Expire(sremkey, optsingle.EXPIRE)
 
 	t2 := time.Now()
-	zaplogger.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "BO_RPUSH_RPUSHX_RPOP_RPOPLPUSH"), zap.String("KeySuffix", optsingle.KeySuffix), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "BO_RPUSH_RPUSHX_RPOP_RPOPLPUSH"), zap.String("KeySuffix", optsingle.KeySuffix), zap.Duration("time", t2.Sub(t1)))
 
 }
 
@@ -543,7 +544,7 @@ func (optsingle *OptSingle) BO_SDIFFSTORE_SINTERSTORE_SUNIONSTORE() {
 	optsingle.RedisConn.Del(sdiff1, sdiff2)
 
 	t2 := time.Now()
-	zaplogger.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "BO_SDIFFSTORE_SINTERSTORE_SUNIONSTORE"), zap.String("KeySuffix", optsingle.KeySuffix), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "BO_SDIFFSTORE_SINTERSTORE_SUNIONSTORE"), zap.String("KeySuffix", optsingle.KeySuffix), zap.Duration("time", t2.Sub(t1)))
 }
 
 //ZADD ZINCRBY ZREM
@@ -577,7 +578,7 @@ func (optsingle OptSingle) BO_ZADD_ZINCRBY_ZPOPMAX_ZPOPMIN_ZREM() {
 	optsingle.RedisConn.Expire(zrem, optsingle.EXPIRE)
 	t2 := time.Now()
 
-	zaplogger.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "BO_ZADD_ZINCRBY_ZPOPMAX_ZPOPMIN_ZREM"), zap.String("KeySuffix", optsingle.KeySuffix), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "BO_ZADD_ZINCRBY_ZPOPMAX_ZPOPMIN_ZREM"), zap.String("KeySuffix", optsingle.KeySuffix), zap.Duration("time", t2.Sub(t1)))
 }
 
 //ZPOPMAX ZPOPMIN
@@ -608,7 +609,7 @@ func (optsingle OptSingle) BO_ZPOPMAX_ZPOPMIN() {
 	optsingle.RedisConn.Expire(zpopmin, optsingle.EXPIRE)
 	t2 := time.Now()
 
-	zaplogger.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "BO_ZPOPMAX_ZPOPMIN"), zap.String("KeySuffix", optsingle.KeySuffix), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "BO_ZPOPMAX_ZPOPMIN"), zap.String("KeySuffix", optsingle.KeySuffix), zap.Duration("time", t2.Sub(t1)))
 }
 
 //ZREMRANGEBYLEX ZREMRANGEBYRANK ZREMRANGEBYSCORE
@@ -639,7 +640,7 @@ func (optsingle *OptSingle) BO_ZREMRANGEBYLEX_ZREMRANGEBYRANK_ZREMRANGEBYSCORE()
 	optsingle.RedisConn.Expire(zremrangebyscore, optsingle.EXPIRE)
 
 	t2 := time.Now()
-	zaplogger.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "BO_ZREMRANGEBYLEX_ZREMRANGEBYRANK_ZREMRANGEBYSCORE"), zap.String("KeySuffix", optsingle.KeySuffix), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "BO_ZREMRANGEBYLEX_ZREMRANGEBYRANK_ZREMRANGEBYSCORE"), zap.String("KeySuffix", optsingle.KeySuffix), zap.Duration("time", t2.Sub(t1)))
 
 }
 
@@ -674,7 +675,7 @@ func (optsingle *OptSingle) BO_ZUNIONSTORE_ZINTERSTORE() {
 	optsingle.RedisConn.Expire(zinterstore, optsingle.EXPIRE)
 	optsingle.RedisConn.Expire(zunionstore, optsingle.EXPIRE)
 	t2 := time.Now()
-	zaplogger.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "BO_ZUNIONSTORE_ZINTERSTORE"), zap.String("KeySuffix", optsingle.KeySuffix), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optsingle.DB), zap.String("command", "BO_ZUNIONSTORE_ZINTERSTORE"), zap.String("KeySuffix", optsingle.KeySuffix), zap.Duration("time", t2.Sub(t1)))
 
 }
 

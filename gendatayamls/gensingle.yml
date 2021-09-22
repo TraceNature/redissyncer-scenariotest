@@ -1,0 +1,39 @@
+---
+# 目标类型 0 单实例 1 集群 默认为0
+type: 0
+# 目标地址 数组 单实例取第一个地址
+addr:
+  - '114.67.76.82:16375'
+password: "redistest0102"
+db: 0
+# 大key生成，用于生成set、hash、zset等集合类key以及string
+bigkey:
+  # key名后缀长度
+  keysuffixlen: 4
+  # set、hash等集合类型包含元素的的数量
+  length: 99
+  # value的字节数
+  valuesize: 128
+  # key过期时间，单位为秒
+  expire: 3600
+  # 持续时间之内循环生成大key，数据产生时间超过持续时间时至少生成一次
+  duaration: 10
+  # 数据生成间隔，单位为毫秒
+  datageninterval: 2
+# 生成随机key配置描述，按照指定规则生成key，尽量覆盖redis中所有类型的key和操作，无需定义value，value与key一致
+randkey:
+  # key名后缀长度
+  keysuffixlen: 4
+  # 对于append、lpush这样需要多次执行的命令执行的次数
+  loopstep: 10
+  # key过期时间，单位为秒
+  expire: 3600
+  # 持续时间之内循环生成大key，数据产生时间超过持续时间时至少生成一次
+  duaration: 120
+  # 数据生成间隔，单位为毫秒
+  datageninterval: 200
+  # 生成数据的并发进程数，默认为cpu核数
+  threads: 2
+
+...
+

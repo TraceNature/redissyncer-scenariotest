@@ -10,13 +10,14 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"testcase/globalzap"
+	"testcase/global"
+	//"testcase/globalzap"
 	"testcase/model/response"
 	"time"
 	jsoniter "github.com/json-iterator/go"
 )
 
-var logger = globalzap.GetLogger()
+var logger = global.RSPLog
 
 const CreateTaskPath = "/api/task/create"
 const StartTaskPath = "/api/task/start"

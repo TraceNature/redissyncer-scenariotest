@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"testcase/commons"
+	"testcase/global"
 )
 
 // NewConfigCommand return a config subcommand of rootCmd
@@ -56,7 +56,7 @@ func showScheduleConfigCommandFunc(cmd *cobra.Command, args []string) {
 }
 
 func showAllConfigCommandFunc(cmd *cobra.Command, args []string) {
-	configs, err := commons.MapToYamlString(viper.AllSettings())
+	configs, err := commons.MapToYamlString(global.RSPViper.AllSettings())
 	if err != nil {
 		cmd.PrintErrln(err)
 		return

@@ -22,17 +22,14 @@ import (
 	"os/signal"
 	"strings"
 	"syscall"
-	"testcase/core"
-	"testcase/global"
 	"testcase/interact"
 )
 
 
 func main() {
 
-	//cmd.Execute()
-
-	global.RSPLog = core.Zap()
+	//fmt.Println(global.RSPViper)
+	//global.RSPLog = core.Zap()
 
 	pdAddr := os.Getenv("PD_ADDR")
 	if pdAddr != "" {
@@ -67,6 +64,5 @@ func main() {
 		}
 		input = strings.Split(strings.TrimSpace(string(b[:])), " ")
 	}
-
 	interact.MainStart(append(os.Args[1:], input...))
 }

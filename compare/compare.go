@@ -1,8 +1,11 @@
 package compare
 
-import "testcase/globalzap"
+import (
+	"testcase/global"
+	//"testcase/globalzap"
+)
 
-var zaplogger = globalzap.GetLogger()
+var zaplogger = global.RSPLog
 
 type CompareResult struct {
 	IsEqual        bool

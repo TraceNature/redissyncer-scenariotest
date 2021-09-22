@@ -45,12 +45,6 @@ func genDataCommandFunc(cmd *cobra.Command, args []string) {
 			continue
 		}
 
-		//yamlFile, err := ioutil.ReadFile(v)
-		//if err != nil {
-		//	logger.Sugar().Error(err)
-		//	cmd.PrintErrln(err)
-		//	//return err
-		//}
 		file, err := os.Open(v)
 		if err!=nil{
 			cmd.PrintErrln(err)
@@ -59,16 +53,19 @@ func genDataCommandFunc(cmd *cobra.Command, args []string) {
 
 
 		for {
-			data:=generatedata.GenData{}
+			data := generatedata.GenData{}
 
-			err:=dec.Decode(&data)
-			if err!=nil{
-				if !errors.Is(err,io.EOF){
+			err := dec.Decode(&data)
+			if err != nil {
+				if !errors.Is(err, io.EOF) {
 					cmd.PrintErrln(err)
 				}
 				break
 			}
-			cmd.Println(data)
+			//cmd.Println(data)
+			cmd.Println(data.BigKey)
+			cmd.Println(data.RandKey)
+			cmd.Println(data.RandKey == nil)
 			data.Exec()
 
 		}

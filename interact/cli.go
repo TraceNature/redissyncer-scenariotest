@@ -5,13 +5,15 @@ import (
 	"github.com/chzyer/readline"
 	"github.com/mattn/go-shellwords"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"io"
 	"os"
 	"strings"
+	"testcase/commons"
+	"testcase/core"
+	"testcase/global"
+
 	//"interactioncli/check"
 	"testcase/cmd"
-	"testcase/commons"
 )
 
 type CommandFlags struct {
@@ -44,7 +46,6 @@ var readLineCompleter *readline.PrefixCompleter
 func init() {
 	cobra.EnablePrefixMatching = true
 	cobra.OnInitialize(initConfig)
-
 }
 
 func cliRun(cmd *cobra.Command, args []string) {
@@ -151,26 +152,43 @@ func startCmd(getCmd func([]string) *cobra.Command, args []string) {
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
 
-	if syncserver == "" {
-		fmt.Println(syncserver)
-		syncserver = os.Getenv("SYNCSERVER")
+	if global.RSPViper != nil {
+		return
 	}
+	if cfgFile != "" {
+		if !commons.FileExists(cfgFile) {
+			panic("config file not exists")
+		}
 
-	if cfgFile != "" && commons.FileExists(cfgFile) {
-		// Use config file from the flag.
-		viper.SetConfigFile(cfgFile)
-	} else {
-		viper.AddConfigPath(".")
-		viper.SetConfigName("config")
+		global.RSPViper = core.Viper(cfgFile)
+		global.RSPLog = core.Zap()
+		return
 	}
+	global.RSPViper = core.Viper()
+	global.RSPLog = core.Zap()
 
-	viper.ReadInConfig()
+	//global.RSPLog = core.Zap()
 
-	viper.AutomaticEnv() // read in environment variables that match
-
-	if syncserver != "" {
-		viper.Set("SYNCSERVER", syncserver)
-	}
+	//if syncserver == "" {
+	//	fmt.Println(syncserver)
+	//	syncserver = os.Getenv("SYNCSERVER")
+	//}
+	//
+	//if cfgFile != "" && commons.FileExists(cfgFile) {
+	//	// Use config file from the flag.
+	//	viper.SetConfigFile(cfgFile)
+	//} else {
+	//	viper.AddConfigPath(".")
+	//	viper.SetConfigName("config")
+	//}
+	//
+	//viper.ReadInConfig()
+	//
+	//viper.AutomaticEnv() // read in environment variables that match
+	//
+	//if syncserver != "" {
+	//	viper.Set("SYNCSERVER", syncserver)
+	//}
 
 }
 

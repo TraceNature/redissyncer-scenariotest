@@ -7,5 +7,5 @@ zap:
   link-name: 'latest_log'
   show-line: true
   encode-level: 'LowercaseColorLevelEncoder'
-  stacktrace-key: 'stacktrace'
+#  stacktrace-key: 'stacktrace'
   log-in-console: true
