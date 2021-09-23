@@ -3,6 +3,7 @@ package generatedata
 import (
 	"context"
 	"github.com/go-redis/redis/v7"
+	"runtime"
 	"sync"
 	"time"
 
@@ -63,7 +64,7 @@ func (gd *GenData) Exec() {
 		passwd := gd.Password
 		redisopt := &redis.Options{
 			Addr: redisaddr,
-			DB:   0, // use default DB
+			DB:   gd.DB, // use default DB
 		}
 
 		if passwd != "" {
@@ -106,6 +107,11 @@ func (gd *GenData) Exec() {
 		}
 
 		if gd.RandKey != nil {
+			threads := runtime.NumCPU()
+			if gd.RandKey.Threads > 0 {
+				threads = gd.RandKey.Threads
+			}
+
 			d := time.Now().Add(time.Duration(gd.RandKey.Duration) * time.Second)
 			ctx, cancel := context.WithDeadline(context.Background(), d)
 			defer cancel()
@@ -120,11 +126,79 @@ func (gd *GenData) Exec() {
 				DB:        gd.DB,
 			}
 
+			for i := 0; i < threads; i++ {
+				wg.Add(1)
+				go func() {
+					optSingle.KeepExecBasicOpt(ctx, time.Duration(gd.RandKey.DataGenInterval)*time.Millisecond, false)
+					wg.Done()
+				}()
+			}
+			wg.Wait()
+		}
+	}
+
+	if gd.TargetType == TargettypeCluster {
+		opt := &redis.ClusterOptions{
+			Addrs: gd.Addr,
+		}
+		if gd.Password != "" {
+			opt.Password = gd.Password
+		}
+		clusterClient := redis.NewClusterClient(opt)
+
+		if gd.BigKey != nil {
+			d := time.Now().Add(time.Duration(gd.BigKey.Duration) * time.Second)
+			ctx, cancel := context.WithDeadline(context.Background(), d)
+			defer cancel()
+
+			wg := sync.WaitGroup{}
+			keySuffix := commons.RandString(gd.BigKey.KeySuffixLen)
+			valuePrefix := commons.RandString(gd.BigKey.ValueSize)
+			genBigKVCluster := GenBigKVCluster{
+				RedisClusterClient: clusterClient,
+				KeySuffix:          keySuffix,
+				Length:             gd.BigKey.Length,
+				EXPIRE:             time.Duration(gd.BigKey.Expire) * time.Second,
+				DB:                 gd.DB,
+				ValuePrefix:        valuePrefix,
+				DataGenInterval:    time.Duration(gd.BigKey.DataGenInterval) * time.Millisecond,
+			}
+
 			wg.Add(1)
 			go func() {
-				optSingle.KeepExecBasicOpt(ctx, time.Duration(gd.RandKey.DataGenInterval)*time.Millisecond, false)
+				genBigKVCluster.KeepGenBigSingle(ctx)
 				wg.Done()
 			}()
+			wg.Wait()
+		}
+
+		if gd.RandKey != nil {
+			threads := runtime.NumCPU()
+			if gd.RandKey.Threads > 0 {
+				threads = gd.RandKey.Threads
+			}
+
+			d := time.Now().Add(time.Duration(gd.RandKey.Duration) * time.Second)
+			ctx, cancel := context.WithDeadline(context.Background(), d)
+			defer cancel()
+
+			wg := sync.WaitGroup{}
+			keySuffix := commons.RandString(gd.RandKey.KeySuffixLen)
+			optCluster := OptCluster{
+				ClusterClient: clusterClient,
+				KeySuffix:     keySuffix,
+				Loopstep:      gd.RandKey.Loopstep,
+				EXPIRE:        time.Duration(gd.RandKey.Expire) * time.Second,
+				DB:            0,
+			}
+
+			for i := 0; i < threads; i++ {
+				wg.Add(1)
+				go func() {
+					optCluster.KeepExecBasicOptCluster(ctx, time.Duration(gd.RandKey.DataGenInterval)*time.Millisecond)
+					wg.Done()
+				}()
+			}
 			wg.Wait()
 		}
 	}

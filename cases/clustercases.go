@@ -245,6 +245,7 @@ func (tc *TestCase) Cluster2Cluster() {
 		Length:             tc.BigKV_Loopstep,
 		EXPIRE:             time.Duration(tc.BigKV_EXPIRE) * time.Second,
 		ValuePrefix:        commons.RandString(tc.BigKV_ValuePrefix_Len),
+		DataGenInterval:    time.Duration(tc.DataGenInterval) * time.Millisecond,
 	}
 	bgkv.GenerateBaseDataParallelCluster()
 

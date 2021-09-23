@@ -5,7 +5,7 @@ type: 0
 addr:
   - '114.67.76.82:16375'
 password: "redistest0102"
-db: 0
+db: 2
 # 大key生成，用于生成set、hash、zset等集合类key以及string
 bigkey:
   # key名后缀长度
