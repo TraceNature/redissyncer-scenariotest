@@ -12,6 +12,7 @@ import (
 	"testcase/commons"
 	"testcase/compare"
 	"testcase/generatedata"
+	"testcase/global"
 	"testcase/synctaskhandle"
 	"time"
 )
@@ -55,11 +56,11 @@ func (tc *TestCase) Single2Cluster() {
 
 	//check redis 连通性
 	if !commons.CheckRedisClientConnect(sclient) {
-		logger.Sugar().Error(errors.New("Cannot connect source redis"))
+		global.RSPLog.Sugar().Error(errors.New("Cannot connect source redis"))
 		os.Exit(1)
 	}
 	if !commons.CheckRedisClusterClientConnect(tclient) {
-		logger.Sugar().Error(errors.New("Cannot connect target redis"))
+		global.RSPLog.Sugar().Error(errors.New("Cannot connect target redis"))
 		os.Exit(1)
 	}
 
@@ -84,9 +85,9 @@ func (tc *TestCase) Single2Cluster() {
 
 	}
 	//清理任务
-	logger.Sugar().Info("Clean Task beging...")
+	global.RSPLog.Sugar().Info("Clean Task beging...")
 	synctaskhandle.RemoveTaskByName(tc.SyncServer, taskname)
-	logger.Sugar().Info("Clean Task end")
+	global.RSPLog.Sugar().Info("Clean Task end")
 	
 	//生成垫底数据
 	bgkv := generatedata.GenBigKV{
@@ -98,16 +99,16 @@ func (tc *TestCase) Single2Cluster() {
 	bgkv.GenerateBaseDataParallel(sclient)
 
 	//创建任务
-	logger.Sugar().Info("Create Task beging...")
+	global.RSPLog.Sugar().Info("Create Task beging...")
 	taskids := synctaskhandle.CreateTask(tc.SyncServer, string(createjson))
-	logger.Sugar().Info("Task Id is: ", taskids)
+	global.RSPLog.Sugar().Info("Task Id is: ", taskids)
 
 	//启动任务
 	for _, v := range taskids {
 		synctaskhandle.StartTask(tc.SyncServer, v)
 	}
 
-	logger.Sugar().Info("Create Task end")
+	global.RSPLog.Sugar().Info("Create Task end")
 
 	//生成增量数据
 	d := time.Now().Add(time.Duration(tc.GenDataDuration) * time.Second)
@@ -133,7 +134,7 @@ func (tc *TestCase) Single2Cluster() {
 
 	//查看任务状态，直到COMMANDRUNING状态
 	tc.CheckSyncTaskStatus(taskids)
-	logger.Sugar().Info("Check task status end")
+	global.RSPLog.Sugar().Info("Check task status end")
 
 	//停止任务
 	for _, id := range taskids {
@@ -192,11 +193,11 @@ func (tc *TestCase) Cluster2Cluster() {
 
 	//check redis 连通性
 	if !commons.CheckRedisClusterClientConnect(sclient) {
-		logger.Sugar().Error(errors.New("Cannot connect source redis"))
+		global.RSPLog.Sugar().Error(errors.New("Cannot connect source redis"))
 		os.Exit(1)
 	}
 	if !commons.CheckRedisClusterClientConnect(tclient) {
-		logger.Sugar().Error(errors.New("Cannot connect target redis"))
+		global.RSPLog.Sugar().Error(errors.New("Cannot connect target redis"))
 		os.Exit(1)
 	}
 
@@ -234,9 +235,9 @@ func (tc *TestCase) Cluster2Cluster() {
 	}
 
 	//清理任务
-	logger.Sugar().Info("Clean Task beging...")
+	global.RSPLog.Sugar().Info("Clean Task beging...")
 	synctaskhandle.RemoveTaskByName(tc.SyncServer, taskname)
-	logger.Sugar().Info("Clean Task end")
+	global.RSPLog.Sugar().Info("Clean Task end")
 
 	//生成垫底数据
 	bgkv := generatedata.GenBigKVCluster{
@@ -250,16 +251,16 @@ func (tc *TestCase) Cluster2Cluster() {
 	bgkv.GenerateBaseDataParallelCluster()
 
 	//创建任务
-	logger.Sugar().Info("Create Task beging...")
+	global.RSPLog.Sugar().Info("Create Task beging...")
 	taskids := synctaskhandle.CreateTask(tc.SyncServer, string(createjson))
-	logger.Sugar().Info("Task Id is: ", taskids)
+	global.RSPLog.Sugar().Info("Task Id is: ", taskids)
 
 	//启动任务
 	for _, v := range taskids {
 		synctaskhandle.StartTask(tc.SyncServer, v)
 	}
 
-	logger.Sugar().Info("Create Task end")
+	global.RSPLog.Sugar().Info("Create Task end")
 
 	//生成增量数据
 	d := time.Now().Add(time.Duration(tc.GenDataDuration) * time.Second)
@@ -285,7 +286,7 @@ func (tc *TestCase) Cluster2Cluster() {
 
 	//查看任务状态，直到COMMANDRUNING状态
 	tc.CheckSyncTaskStatus(taskids)
-	logger.Sugar().Info("Check task status end")
+	global.RSPLog.Sugar().Info("Check task status end")
 
 	//停止任务
 	for _, id := range taskids {

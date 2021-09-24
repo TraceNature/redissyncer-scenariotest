@@ -12,6 +12,7 @@ import (
 	"testcase/commons"
 	"testcase/compare"
 	"testcase/generatedata"
+	"testcase/global"
 	"testcase/synctaskhandle"
 	"time"
 )
@@ -55,11 +56,11 @@ func (tc *TestCase) Single2Single() {
 
 	//check redis 连通性
 	if !commons.CheckRedisClientConnect(sclient) {
-		logger.Sugar().Error(errors.New("Cannot connect source redis"))
+		global.RSPLog.Sugar().Error(errors.New("Cannot connect source redis"))
 		os.Exit(1)
 	}
 	if !commons.CheckRedisClientConnect(tclient) {
-		logger.Sugar().Error(errors.New("Cannot connect target redis"))
+		global.RSPLog.Sugar().Error(errors.New("Cannot connect target redis"))
 		os.Exit(1)
 	}
 
@@ -70,9 +71,9 @@ func (tc *TestCase) Single2Single() {
 	tclient.FlushAll()
 
 	//清理任务
-	logger.Sugar().Info("Clean Task beging...")
+	global.RSPLog.Sugar().Info("Clean Task beging...")
 	synctaskhandle.RemoveTaskByName(tc.SyncServer, taskname)
-	logger.Sugar().Info("Clean Task end")
+	global.RSPLog.Sugar().Info("Clean Task end")
 
 	//生成垫底数据
 	bgkv := generatedata.GenBigKV{
@@ -84,16 +85,16 @@ func (tc *TestCase) Single2Single() {
 	bgkv.GenerateBaseDataParallel(sclient)
 
 	//创建任务
-	logger.Sugar().Info("Create Task beging...")
+	global.RSPLog.Sugar().Info("Create Task beging...")
 	taskids := synctaskhandle.CreateTask(tc.SyncServer, string(createjson))
-	logger.Sugar().Info("Task Id is: ", taskids)
+	global.RSPLog.Sugar().Info("Task Id is: ", taskids)
 
 	//启动任务
 	for _, v := range taskids {
 		synctaskhandle.StartTask(tc.SyncServer, v)
 	}
 
-	logger.Sugar().Info("Create Task end")
+	global.RSPLog.Sugar().Info("Create Task end")
 
 	//生成增量数据
 	d := time.Now().Add(time.Duration(tc.GenDataDuration) * time.Second)
@@ -120,7 +121,7 @@ func (tc *TestCase) Single2Single() {
 
 	//查看任务状态，验证任务状态是否可以关闭，并保证数据同步完成
 	tc.CheckSyncTaskStatus(taskids)
-	logger.Sugar().Info("Check task status end")
+	global.RSPLog.Sugar().Info("Check task status end")
 
 	//停止任务
 	for _, id := range taskids {
@@ -153,7 +154,7 @@ func (tc TestCase) Single2SingleWithDBMap() {
 
 	increment_pool, err := ants.NewPool(len(dbmap))
 	if err != nil {
-		logger.Sugar().Error(err)
+		global.RSPLog.Sugar().Error(err)
 		return
 	}
 
@@ -185,11 +186,11 @@ func (tc TestCase) Single2SingleWithDBMap() {
 
 	//check redis 连通性
 	if !commons.CheckRedisClientConnect(sclient) {
-		logger.Sugar().Error(errors.New("Cannot connect source redis"))
+		global.RSPLog.Sugar().Error(errors.New("Cannot connect source redis"))
 		os.Exit(1)
 	}
 	if !commons.CheckRedisClientConnect(tclient) {
-		logger.Sugar().Error(errors.New("Cannot connect target redis"))
+		global.RSPLog.Sugar().Error(errors.New("Cannot connect target redis"))
 		os.Exit(1)
 	}
 
@@ -200,15 +201,15 @@ func (tc TestCase) Single2SingleWithDBMap() {
 	tclient.FlushAll()
 
 	//清理任务
-	logger.Sugar().Info("Clean Task beging...")
+	global.RSPLog.Sugar().Info("Clean Task beging...")
 	synctaskhandle.RemoveTaskByName(tc.SyncServer, taskname)
-	logger.Sugar().Info("Clean Task end")
+	global.RSPLog.Sugar().Info("Clean Task end")
 
 	//生成垫底数据
 	for k, _ := range dbmap {
 		db, err := strconv.Atoi(k)
 		if err != nil {
-			logger.Sugar().Error(err)
+			global.RSPLog.Sugar().Error(err)
 			return
 		}
 		sopt.DB = db
@@ -225,16 +226,16 @@ func (tc TestCase) Single2SingleWithDBMap() {
 	}
 
 	//创建任务
-	logger.Sugar().Info("Create Task beging...")
+	global.RSPLog.Sugar().Info("Create Task beging...")
 	taskids := synctaskhandle.CreateTask(tc.SyncServer, string(createjson))
-	logger.Sugar().Info("Task Id is: ", taskids)
+	global.RSPLog.Sugar().Info("Task Id is: ", taskids)
 
 	//启动任务
 	for _, v := range taskids {
 		synctaskhandle.StartTask(tc.SyncServer, v)
 	}
 
-	logger.Sugar().Info("Create Task end")
+	global.RSPLog.Sugar().Info("Create Task end")
 
 	//生成增量数据
 	d := time.Now().Add(time.Duration(tc.GenDataDuration) * time.Second)
@@ -246,7 +247,7 @@ func (tc TestCase) Single2SingleWithDBMap() {
 	for k, _ := range dbmap {
 		db, err := strconv.Atoi(k)
 		if err != nil {
-			logger.Sugar().Error(err)
+			global.RSPLog.Sugar().Error(err)
 			return
 		}
 		sopt.DB = db
@@ -272,7 +273,7 @@ func (tc TestCase) Single2SingleWithDBMap() {
 
 	//查看任务状态，直到COMMANDRUNING状态
 	tc.CheckSyncTaskStatus(taskids)
-	logger.Sugar().Info("Check task status end")
+	global.RSPLog.Sugar().Info("Check task status end")
 
 	//停止任务
 	for _, id := range taskids {
@@ -286,13 +287,13 @@ func (tc TestCase) Single2SingleWithDBMap() {
 	for k, v := range dbmap {
 		sdb, err := strconv.Atoi(k)
 		if err != nil {
-			logger.Sugar().Error(err)
+			global.RSPLog.Sugar().Error(err)
 			return
 		}
 
 		tdb, err := strconv.Atoi(v.Raw)
 		if err != nil {
-			logger.Sugar().Error(err)
+			global.RSPLog.Sugar().Error(err)
 			return
 		}
 

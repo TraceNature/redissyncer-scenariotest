@@ -117,31 +117,31 @@ func NewTestCase() TestCase {
 func (tc *TestCase) Exec() {
 	switch tc.CaseType.String() {
 	case "Single2Single":
-		logger.Sugar().Info("Execute " + tc.CaseType.String())
+		global.RSPLog.Sugar().Info("Execute " + tc.CaseType.String())
 		tc.Single2Single()
 	case "Single2SingleWithDBMap":
-		logger.Sugar().Info("Execute " + tc.CaseType.String())
+		global.RSPLog.Sugar().Info("Execute " + tc.CaseType.String())
 		tc.Single2SingleWithDBMap()
 	case "Single2Cluster":
-		logger.Sugar().Info("Execute " + tc.CaseType.String())
+		global.RSPLog.Sugar().Info("Execute " + tc.CaseType.String())
 		tc.Single2Cluster()
 	case "Cluster2Cluster":
-		logger.Sugar().Info("Execute " + tc.CaseType.String())
+		global.RSPLog.Sugar().Info("Execute " + tc.CaseType.String())
 		tc.Cluster2Cluster()
 	case "ImportRdb2Single":
-		logger.Sugar().Info("Execute " + tc.CaseType.String())
+		global.RSPLog.Sugar().Info("Execute " + tc.CaseType.String())
 		tc.ImportRdb2Single()
 	case "ImportAof2Single":
-		logger.Sugar().Info("Execute " + tc.CaseType.String())
+		global.RSPLog.Sugar().Info("Execute " + tc.CaseType.String())
 		tc.ImportAof2Single()
 	case "ImportRdb2Cluster":
-		logger.Sugar().Info("Execute " + tc.CaseType.String())
+		global.RSPLog.Sugar().Info("Execute " + tc.CaseType.String())
 		tc.ImportRdb2Cluster()
 	case "ImportAof2Cluster":
-		logger.Sugar().Info("Execute " + tc.CaseType.String())
+		global.RSPLog.Sugar().Info("Execute " + tc.CaseType.String())
 		tc.ImportAof2Cluster()
 	default:
-		logger.Sugar().Info("Nothing to be executed")
+		global.RSPLog.Sugar().Info("Nothing to be executed")
 		return
 	}
 
@@ -151,12 +151,12 @@ func (tc *TestCase) Exec() {
 func (tc *TestCase) ParseYamlFile(filepath string) error {
 	yamlFile, err := ioutil.ReadFile(filepath)
 	if err != nil {
-		logger.Sugar().Error(err)
+		global.RSPLog.Sugar().Error(err)
 		return err
 	}
 	err = yaml.Unmarshal(yamlFile, tc)
 	if err != nil {
-		logger.Sugar().Error(err)
+		global.RSPLog.Sugar().Error(err)
 		return err
 	}
 	return nil
@@ -170,14 +170,14 @@ func (tc *TestCase) ParseJsonFile(casefile string) []byte {
 
 	if err != nil {
 		//logger.Println(err)
-		logger.Info(err.Error())
+		global.RSPLog.Info(err.Error())
 		os.Exit(1)
 	}
 
 	jsonbytes, err := ioutil.ReadAll(jsonFile)
 	if err != nil {
 		//logger.Println(err)
-		logger.Info(err.Error())
+		global.RSPLog.Info(err.Error())
 		os.Exit(1)
 	}
 	return jsonbytes
@@ -199,7 +199,7 @@ func (tc *TestCase) CheckSyncTaskStatus(taskids []string) {
 		}
 
 		if len(statusmap) == 0 {
-			logger.Error("No status return")
+			global.RSPLog.Error("No status return")
 			os.Exit(1)
 		}
 
@@ -212,7 +212,7 @@ func (tc *TestCase) CheckSyncTaskStatus(taskids []string) {
 			}
 
 			if v == "" {
-				logger.Error("Task not exists ", zap.String("taskid", k))
+				global.RSPLog.Error("Task not exists ", zap.String("taskid", k))
 				os.Exit(1)
 			}
 
@@ -221,7 +221,7 @@ func (tc *TestCase) CheckSyncTaskStatus(taskids []string) {
 				iscommandrunning = true
 			}
 
-			logger.Sugar().Info(v)
+			global.RSPLog.Sugar().Info(v)
 
 			if gjson.Get(v, "taskStatus.status").Int() == 7 {
 				if lastKeyAcross.LastKeyAcross.LastKeyCommitTime > 0 {
@@ -247,7 +247,7 @@ func (tc *TestCase) CheckSyncTaskStatus(taskids []string) {
 			}
 
 			if gjson.Get(v, "taskStatus").Int() == 5 {
-				logger.Error("sync task broken! ", zap.String("taskid", k), zap.String("task_status", v))
+				global.RSPLog.Error("sync task broken! ", zap.String("taskid", k), zap.String("task_status", v))
 				os.Exit(1)
 			}
 

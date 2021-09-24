@@ -10,5 +10,5 @@ func DisplayCasesList() {
 	for k, v := range CaseTypeMap {
 		fmt.Println(k, v)
 	}
-	logger.Sugar().Info(global.RSPViper.Get("server"))
+	global.RSPLog.Sugar().Info(global.RSPViper.Get("server"))
 }

@@ -13,6 +13,7 @@ import (
 	"testcase/commons"
 	"testcase/compare"
 	"testcase/generatedata"
+	"testcase/global"
 	"testcase/synctaskhandle"
 	"time"
 )
@@ -56,11 +57,11 @@ func (tc *TestCase) ImportRdb2Single() {
 
 	//check redis 连通性
 	if !commons.CheckRedisClientConnect(sclient) {
-		logger.Sugar().Error(errors.New("Cannot connect source redis"))
+		global.RSPLog.Sugar().Error(errors.New("Cannot connect source redis"))
 		os.Exit(1)
 	}
 	if !commons.CheckRedisClientConnect(tclient) {
-		logger.Sugar().Error(errors.New("Cannot connect target redis"))
+		global.RSPLog.Sugar().Error(errors.New("Cannot connect target redis"))
 		os.Exit(1)
 	}
 
@@ -110,13 +111,13 @@ func (tc *TestCase) ImportRdb2Single() {
 	syncserverip := strings.Split(strings.Split(tc.SyncServer, "//")[1], ":")[0]
 	sshclient, err := commons.GenSshClient(tc.SyncServerOsUser, tc.SyncServerOsUserPassword, syncserverip+tc.SyncServerSshPort)
 	if err != nil {
-		logger.Sugar().Error(err)
+		global.RSPLog.Sugar().Error(err)
 		return
 	}
 	defer sshclient.Close()
 	session, err := sshclient.NewSession()
 	if err != nil {
-		logger.Sugar().Error(err)
+		global.RSPLog.Sugar().Error(err)
 		return
 	}
 	defer session.Close()
@@ -128,31 +129,31 @@ func (tc *TestCase) ImportRdb2Single() {
 
 	cprdbtosyncserver, err := session.CombinedOutput(sshcmd)
 	if err != nil {
-		logger.Sugar().Error(err)
+		global.RSPLog.Sugar().Error(err)
 		return
 	}
-	logger.Sugar().Info(string(cprdbtosyncserver))
+	global.RSPLog.Sugar().Info(string(cprdbtosyncserver))
 
 	//清理任务
-	logger.Sugar().Info("Clean Task beging...")
+	global.RSPLog.Sugar().Info("Clean Task beging...")
 	synctaskhandle.RemoveTaskByName(tc.SyncServer, taskname)
-	logger.Sugar().Info("Clean Task end")
+	global.RSPLog.Sugar().Info("Clean Task end")
 
 	//创建任务
-	logger.Sugar().Info("Create Task beging...")
+	global.RSPLog.Sugar().Info("Create Task beging...")
 	taskids := synctaskhandle.Import(tc.SyncServer, string(createjson))
-	logger.Sugar().Info("Task Id is: ", taskids)
+	global.RSPLog.Sugar().Info("Task Id is: ", taskids)
 
 	//启动任务
 	for _, v := range taskids {
 		synctaskhandle.StartTask(tc.SyncServer, v)
 	}
 
-	logger.Sugar().Info("Create Task end")
+	global.RSPLog.Sugar().Info("Create Task end")
 
 	//查看任务状态，直到COMMANDRUNING状态
 	tc.CheckSyncTaskStatus(taskids)
-	logger.Sugar().Info("Check task status end")
+	global.RSPLog.Sugar().Info("Check task status end")
 
 	//停止任务
 	for _, id := range taskids {
@@ -210,11 +211,11 @@ func (tc *TestCase) ImportAof2Single() {
 
 	//check redis 连通性
 	if !commons.CheckRedisClientConnect(sclient) {
-		logger.Sugar().Error(errors.New("Cannot connect source redis"))
+		global.RSPLog.Sugar().Error(errors.New("Cannot connect source redis"))
 		os.Exit(1)
 	}
 	if !commons.CheckRedisClientConnect(tclient) {
-		logger.Sugar().Error(errors.New("Cannot connect target redis"))
+		global.RSPLog.Sugar().Error(errors.New("Cannot connect target redis"))
 		os.Exit(1)
 	}
 
@@ -225,9 +226,9 @@ func (tc *TestCase) ImportAof2Single() {
 	tclient.FlushAll()
 
 	//清理任务
-	logger.Sugar().Info("Clean Task beging...")
+	global.RSPLog.Sugar().Info("Clean Task beging...")
 	synctaskhandle.RemoveTaskByName(tc.SyncServer, taskname)
-	logger.Sugar().Info("Clean Task end")
+	global.RSPLog.Sugar().Info("Clean Task end")
 
 	//生成垫底数据
 	bgkv := generatedata.GenBigKV{
@@ -266,13 +267,13 @@ func (tc *TestCase) ImportAof2Single() {
 	syncserverip := strings.Split(strings.Split(tc.SyncServer, "//")[1], ":")[0]
 	sshclient, err := commons.GenSshClient(tc.SyncServerOsUser, tc.SyncServerOsUserPassword, syncserverip+tc.SyncServerSshPort)
 	if err != nil {
-		logger.Sugar().Error(err)
+		global.RSPLog.Sugar().Error(err)
 		return
 	}
 	defer sshclient.Close()
 	session, err := sshclient.NewSession()
 	if err != nil {
-		logger.Sugar().Error(err)
+		global.RSPLog.Sugar().Error(err)
 		return
 	}
 	defer session.Close()
@@ -286,26 +287,26 @@ func (tc *TestCase) ImportAof2Single() {
 	cprdbtosyncserver, err := session.CombinedOutput(sshcmd)
 
 	if err != nil {
-		logger.Sugar().Error(err)
+		global.RSPLog.Sugar().Error(err)
 		return
 	}
-	logger.Sugar().Info(string(cprdbtosyncserver))
+	global.RSPLog.Sugar().Info(string(cprdbtosyncserver))
 
 	//创建任务
-	logger.Sugar().Info("Create Task beging...")
+	global.RSPLog.Sugar().Info("Create Task beging...")
 	taskids := synctaskhandle.Import(tc.SyncServer, string(createjson))
-	logger.Sugar().Info("Task Id is: ", taskids)
+	global.RSPLog.Sugar().Info("Task Id is: ", taskids)
 
 	//启动任务
 	for _, v := range taskids {
 		synctaskhandle.StartTask(tc.SyncServer, v)
 	}
 
-	logger.Sugar().Info("Create Task end")
+	global.RSPLog.Sugar().Info("Create Task end")
 
 	//查看任务状态，直到COMMANDRUNING状态
 	tc.CheckSyncTaskStatus(taskids)
-	logger.Sugar().Info("Check task status end")
+	global.RSPLog.Sugar().Info("Check task status end")
 
 	//停止任务
 	for _, id := range taskids {
