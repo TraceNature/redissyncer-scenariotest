@@ -1,7 +1,7 @@
 syncserver: "http://dev:8888"
 createtaskfile: "./tasks/single2singlewithdbmap_v5_v5.json"
 gendataduration: 60
-datageninterval: 30
+datageninterval: 300
 gendatathreads: 2
 bigkvkeysuffixlen: 4
 bigkvloopstep: 20

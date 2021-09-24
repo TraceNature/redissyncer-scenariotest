@@ -1,6 +1,6 @@
 syncserver: "http://dev:8888"
 createtaskfile: "./tasks/single2single_v5_v5.json"
-gendataduration: 60
+gendataduration: 10
 datageninterval: 20
 gendatathreads: 8
 bigkvkeysuffixlen: 4
