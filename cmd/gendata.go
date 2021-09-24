@@ -38,19 +38,17 @@ func genDataCommandFunc(cmd *cobra.Command, args []string) {
 		}
 
 		//判断文件格式
-		isyml := strings.HasSuffix(v, ".yml")
-		isyaml := strings.HasSuffix(v, ".yaml")
-		if !isyml && !isyaml {
+		isYaml := strings.HasSuffix(v, ".yml") || strings.HasSuffix(v, ".yaml")
+		if !isYaml {
 			cmd.PrintErrf("file %s not a yml or yaml file \n", v)
 			continue
 		}
 
 		file, err := os.Open(v)
-		if err!=nil{
+		if err != nil {
 			cmd.PrintErrln(err)
 		}
-		dec:=yaml.NewDecoder(file)
-
+		dec := yaml.NewDecoder(file)
 
 		for {
 			data := generatedata.GenData{}
@@ -62,10 +60,7 @@ func genDataCommandFunc(cmd *cobra.Command, args []string) {
 				}
 				break
 			}
-			//cmd.Println(data)
-			cmd.Println(data.BigKey)
-			cmd.Println(data.RandKey)
-			cmd.Println(data.RandKey == nil)
+
 			data.Exec()
 
 		}

@@ -3,13 +3,14 @@
 package generatedata
 
 import (
+	"context"
 	"github.com/go-redis/redis/v7"
 	"go.uber.org/zap"
 	"math/rand"
 	"strconv"
 	"strings"
+	"testcase/global"
 	"time"
-	"context"
 )
 
 type OptCluster struct {
@@ -129,7 +130,7 @@ func (optcluster *OptCluster) BO_APPEND() {
 	}
 	optcluster.ClusterClient.Expire(appended, optcluster.EXPIRE)
 	t2 := time.Now()
-	zaplogger.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "APPEND"), zap.String("key", appended), zap.Int64("time", t2.Sub(t1).Milliseconds()))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "APPEND"), zap.String("key", appended), zap.Int64("time", t2.Sub(t1).Milliseconds()))
 
 }
 
@@ -157,7 +158,7 @@ func (optcluster *OptCluster) BO_BITOP() {
 	optcluster.ClusterClient.Expire(opxorkey, optcluster.EXPIRE)
 	optcluster.ClusterClient.Expire(opnotkey, optcluster.EXPIRE)
 	t2 := time.Now()
-	zaplogger.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "BITOP"), zap.Any("keys", []string{opandkey, oporkey, opxorkey, opnotkey}), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "BITOP"), zap.Any("keys", []string{opandkey, oporkey, opxorkey, opnotkey}), zap.Duration("time", t2.Sub(t1)))
 }
 
 //DECR and DECRBY
@@ -169,7 +170,7 @@ func (optcluster *OptCluster) BO_DECR_DECRBY() {
 	optcluster.ClusterClient.DecrBy(desckey, rand.Int63n(int64(optcluster.Loopstep)))
 	t2 := time.Now()
 
-	zaplogger.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "DECR_DECRBY"), zap.String("key", desckey), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "DECR_DECRBY"), zap.String("key", desckey), zap.Duration("time", t2.Sub(t1)))
 }
 
 //INCR and INCRBY and INCRBYFLOAT
@@ -181,7 +182,7 @@ func (optcluster *OptCluster) BO_INCR_INCRBY_INCRBYFLOAT() {
 	optcluster.ClusterClient.IncrBy(incrkey, rand.Int63n(int64(optcluster.Loopstep)))
 	optcluster.ClusterClient.IncrByFloat(incrkey, rand.Float64()*float64(rand.Intn(optcluster.Loopstep)))
 	t2 := time.Now()
-	zaplogger.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "INCR_INCRBY_INCRBYFLOAT"), zap.String("key", incrkey), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "INCR_INCRBY_INCRBYFLOAT"), zap.String("key", incrkey), zap.Duration("time", t2.Sub(t1)))
 }
 
 //MSET and MSETNX
@@ -210,7 +211,7 @@ func (optcluster *OptCluster) BO_MSET_MSETNX() {
 	}
 
 	t2 := time.Now()
-	zaplogger.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "MGET_MSETNX"), zap.String("KeySuffix", optcluster.KeySuffix), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "MGET_MSETNX"), zap.String("KeySuffix", optcluster.KeySuffix), zap.Duration("time", t2.Sub(t1)))
 }
 
 ////PSETEX and SETEX
@@ -236,7 +237,7 @@ func (optcluster *OptCluster) BO_PFADD() {
 		optcluster.ClusterClient.PFAdd(pfaddkey, rand.Float64()*float64(rand.Int()))
 	}
 	t2 := time.Now()
-	zaplogger.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "BO_PFADD"), zap.String("KeySuffix", optcluster.KeySuffix), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "BO_PFADD"), zap.String("KeySuffix", optcluster.KeySuffix), zap.Duration("time", t2.Sub(t1)))
 }
 
 //SET and SETNX
@@ -248,7 +249,7 @@ func (optcluster *OptCluster) BO_SET_SETNX() {
 	optcluster.ClusterClient.Set(setkey, setkey, optcluster.EXPIRE)
 	optcluster.ClusterClient.SetNX(setnxkey, setkey, optcluster.EXPIRE)
 	t2 := time.Now()
-	zaplogger.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "SET_SETNX"), zap.String("KeySuffix", optcluster.KeySuffix), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "SET_SETNX"), zap.String("KeySuffix", optcluster.KeySuffix), zap.Duration("time", t2.Sub(t1)))
 }
 
 //SETBIT
@@ -259,7 +260,7 @@ func (optcluster *OptCluster) BO_SETBIT() {
 	optcluster.ClusterClient.Expire(setbitkey, optcluster.EXPIRE)
 
 	t2 := time.Now()
-	zaplogger.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "SETBIT"), zap.String("KeySuffix", optcluster.KeySuffix), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "SETBIT"), zap.String("KeySuffix", optcluster.KeySuffix), zap.Duration("time", t2.Sub(t1)))
 }
 
 //SETRANGE
@@ -269,7 +270,7 @@ func (optcluster *OptCluster) BO_SETRANGE() {
 	optcluster.ClusterClient.Set(setrangekey, setrangekey, optcluster.EXPIRE)
 	optcluster.ClusterClient.SetRange(setrangekey, rand.Int63n(int64(optcluster.Loopstep)), strconv.Itoa(rand.Intn(optcluster.Loopstep)))
 	t2 := time.Now()
-	zaplogger.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "SETRANGE"), zap.String("KeySuffix", optcluster.KeySuffix), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "SETRANGE"), zap.String("KeySuffix", optcluster.KeySuffix), zap.Duration("time", t2.Sub(t1)))
 }
 
 //HINCRBY and HINCRBYFLOAT
@@ -282,7 +283,7 @@ func (optcluster *OptCluster) BO_HINCRBY_HINCRBYFLOAT() {
 		optcluster.ClusterClient.HIncrByFloat(hincrbyfloatkey, hincrbyfloatkey+strconv.Itoa(rand.Intn(optcluster.Loopstep)), rand.Float64()*10)
 	}
 	t2 := time.Now()
-	zaplogger.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "HINCRBY_HINCRBYFLOAT"), zap.String("KeySuffix", optcluster.KeySuffix), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "HINCRBY_HINCRBYFLOAT"), zap.String("KeySuffix", optcluster.KeySuffix), zap.Duration("time", t2.Sub(t1)))
 }
 
 //HSET HMSET HSETNX HDEL
@@ -319,7 +320,7 @@ func (optcluster *OptCluster) BO_HSET_HMSET_HSETNX() {
 	optcluster.ClusterClient.Expire(hsetkey, optcluster.EXPIRE)
 	optcluster.ClusterClient.Expire(hmsetkey, optcluster.EXPIRE)
 	t2 := time.Now()
-	zaplogger.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "HSET_HMSET_HSETNX_HDEL"), zap.String("KeySuffix", optcluster.KeySuffix), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "HSET_HMSET_HSETNX_HDEL"), zap.String("KeySuffix", optcluster.KeySuffix), zap.Duration("time", t2.Sub(t1)))
 }
 
 //LPUSH and LPOP and LPUSHX and LSET
@@ -350,7 +351,7 @@ func (optcluster *OptCluster) BO_LPUSH_LPOP_LPUSHX() {
 
 	optcluster.ClusterClient.Expire(lpushkey, optcluster.EXPIRE)
 	t2 := time.Now()
-	zaplogger.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "LPUSH_LPOP_LPUSHX_LSET"), zap.String("KeySuffix", optcluster.KeySuffix), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "LPUSH_LPOP_LPUSHX_LSET"), zap.String("KeySuffix", optcluster.KeySuffix), zap.Duration("time", t2.Sub(t1)))
 
 }
 
@@ -382,7 +383,7 @@ func (optcluster *OptCluster) BO_LREM_LTRIM_LINSERT() {
 	optcluster.ClusterClient.Expire(lremkey, optcluster.EXPIRE)
 	optcluster.ClusterClient.Expire(ltrimkey, optcluster.EXPIRE)
 	t2 := time.Now()
-	zaplogger.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "LREM_TRIM_LINSERT"), zap.String("KeySuffix", optcluster.KeySuffix), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "LREM_TRIM_LINSERT"), zap.String("KeySuffix", optcluster.KeySuffix), zap.Duration("time", t2.Sub(t1)))
 }
 
 //RPUSH RPUSHX RPOP RPOPLPUSH
@@ -413,7 +414,7 @@ func (optcluster *OptCluster) BO_RPUSH_RPUSHX_RPOP_RPOPLPUSH() {
 	optcluster.ClusterClient.Expire(rpushxkey, optcluster.EXPIRE)
 
 	t2 := time.Now()
-	zaplogger.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "BO_RPUSH_RPUSHX_RPOP_RPOPLPUSH"), zap.String("KeySuffix", optcluster.KeySuffix), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "BO_RPUSH_RPUSHX_RPOP_RPOPLPUSH"), zap.String("KeySuffix", optcluster.KeySuffix), zap.Duration("time", t2.Sub(t1)))
 }
 
 //BLPOP BRPOP BRPOPLPUSH BRPOPLPUSH
@@ -448,7 +449,7 @@ func (optcluster *OptCluster) BO_BLPOP_BRPOP_BRPOPLPUSH() {
 	optcluster.ClusterClient.Expire(blpopkey, optcluster.EXPIRE)
 	optcluster.ClusterClient.Expire(brpopkey, optcluster.EXPIRE)
 	t2 := time.Now()
-	zaplogger.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "BO_BLPOP_BRPOP_BRPOPLPUSH"), zap.String("KeySuffix", optcluster.KeySuffix), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "BO_BLPOP_BRPOP_BRPOPLPUSH"), zap.String("KeySuffix", optcluster.KeySuffix), zap.Duration("time", t2.Sub(t1)))
 }
 
 //SADD SMOVE SPOP SREM
@@ -491,7 +492,7 @@ func (optcluster *OptCluster) BO_SADD_SMOVE_SPOP_SREM() {
 	optcluster.ClusterClient.Expire(sremkey, optcluster.EXPIRE)
 
 	t2 := time.Now()
-	zaplogger.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "BO_RPUSH_RPUSHX_RPOP_RPOPLPUSH"), zap.String("KeySuffix", optcluster.KeySuffix), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "BO_RPUSH_RPUSHX_RPOP_RPOPLPUSH"), zap.String("KeySuffix", optcluster.KeySuffix), zap.Duration("time", t2.Sub(t1)))
 
 }
 
@@ -521,7 +522,7 @@ func (optcluster *OptCluster) BO_SDIFFSTORE_SINTERSTORE_SUNIONSTORE() {
 	optcluster.ClusterClient.Del(sdiff1, sdiff2)
 
 	t2 := time.Now()
-	zaplogger.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "BO_SDIFFSTORE_SINTERSTORE_SUNIONSTORE"), zap.String("KeySuffix", optcluster.KeySuffix), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "BO_SDIFFSTORE_SINTERSTORE_SUNIONSTORE"), zap.String("KeySuffix", optcluster.KeySuffix), zap.Duration("time", t2.Sub(t1)))
 }
 
 //ZADD ZINCRBY ZREM
@@ -555,7 +556,7 @@ func (optcluster OptCluster) BO_ZADD_ZINCRBY_ZPOPMAX_ZPOPMIN_ZREM() {
 	optcluster.ClusterClient.Expire(zrem, optcluster.EXPIRE)
 	t2 := time.Now()
 
-	zaplogger.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "BO_ZADD_ZINCRBY_ZPOPMAX_ZPOPMIN_ZREM"), zap.String("KeySuffix", optcluster.KeySuffix), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "BO_ZADD_ZINCRBY_ZPOPMAX_ZPOPMIN_ZREM"), zap.String("KeySuffix", optcluster.KeySuffix), zap.Duration("time", t2.Sub(t1)))
 }
 
 //ZPOPMAX ZPOPMIN
@@ -586,7 +587,7 @@ func (optcluster OptCluster) BO_ZPOPMAX_ZPOPMIN() {
 	optcluster.ClusterClient.Expire(zpopmin, optcluster.EXPIRE)
 	t2 := time.Now()
 
-	zaplogger.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "BO_ZPOPMAX_ZPOPMIN"), zap.String("KeySuffix", optcluster.KeySuffix), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "BO_ZPOPMAX_ZPOPMIN"), zap.String("KeySuffix", optcluster.KeySuffix), zap.Duration("time", t2.Sub(t1)))
 }
 
 //ZREMRANGEBYLEX ZREMRANGEBYRANK ZREMRANGEBYSCORE
@@ -617,7 +618,7 @@ func (optcluster *OptCluster) BO_ZREMRANGEBYLEX_ZREMRANGEBYRANK_ZREMRANGEBYSCORE
 	optcluster.ClusterClient.Expire(zremrangebyscore, optcluster.EXPIRE)
 
 	t2 := time.Now()
-	zaplogger.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "BO_ZREMRANGEBYLEX_ZREMRANGEBYRANK_ZREMRANGEBYSCORE"), zap.String("KeySuffix", optcluster.KeySuffix), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "BO_ZREMRANGEBYLEX_ZREMRANGEBYRANK_ZREMRANGEBYSCORE"), zap.String("KeySuffix", optcluster.KeySuffix), zap.Duration("time", t2.Sub(t1)))
 
 }
 
@@ -653,7 +654,7 @@ func (optcluster *OptCluster) BO_ZUNIONSTORE_ZINTERSTORE() {
 	optcluster.ClusterClient.Expire(zinterstore, optcluster.EXPIRE)
 	optcluster.ClusterClient.Expire(zunionstore, optcluster.EXPIRE)
 	t2 := time.Now()
-	zaplogger.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "BO_ZUNIONSTORE_ZINTERSTORE"), zap.String("KeySuffix", optcluster.KeySuffix), zap.Duration("time", t2.Sub(t1)))
+	global.RSPLog.Info("ExecCMD", zap.Int("db", optcluster.DB), zap.String("command", "BO_ZUNIONSTORE_ZINTERSTORE"), zap.String("KeySuffix", optcluster.KeySuffix), zap.Duration("time", t2.Sub(t1)))
 }
 
 //随机执行一个基础操作

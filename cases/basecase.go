@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-var logger = global.RSPLog
+//var logger = global.RSPLog
 
 type CaseType int32
 
@@ -186,7 +186,7 @@ func (tc *TestCase) ParseJsonFile(casefile string) []byte {
 //验证任务状态是否可以关闭，并保证数据同步完成
 func (tc *TestCase) CheckSyncTaskStatus(taskids []string) {
 	//查看任务状态，直到COMMANDRUNING状态
-	logger.Sugar().Info("Check task status begin...")
+	global.RSPLog.Sugar().Info("Check task status begin...")
 
 	for {
 
@@ -194,7 +194,7 @@ func (tc *TestCase) CheckSyncTaskStatus(taskids []string) {
 		statusmap, err := synctaskhandle.GetTaskStatus(tc.SyncServer, taskids)
 
 		if err != nil {
-			logger.Sugar().Error(err)
+			global.RSPLog.Sugar().Error(err)
 			os.Exit(1)
 		}
 
@@ -207,7 +207,7 @@ func (tc *TestCase) CheckSyncTaskStatus(taskids []string) {
 		
 			lastKeyAcross, err := synctaskhandle.GetLastKeyAcross(tc.SyncServer, k)
 			if err != nil {
-				logger.Sugar().Error(err)
+				global.RSPLog.Sugar().Error(err)
 				continue
 			}
 
@@ -231,7 +231,7 @@ func (tc *TestCase) CheckSyncTaskStatus(taskids []string) {
 					//如果当前时间与lastKeyCommitTime相减超过20000毫秒 iscommandrunning = true
 					localUnixTimestamp := time.Now().UnixNano() / 1e6
 
-					logger.Sugar().Info(localUnixTimestamp - lastKeyAcross.LastKeyAcross.LastKeyCommitTime)
+					global.RSPLog.Sugar().Info(localUnixTimestamp - lastKeyAcross.LastKeyAcross.LastKeyCommitTime)
 
 					if localUnixTimestamp-lastKeyAcross.LastKeyAcross.LastKeyCommitTime > 20000 {
 						iscommandrunning = true
@@ -252,7 +252,7 @@ func (tc *TestCase) CheckSyncTaskStatus(taskids []string) {
 			}
 
 		}
-		logger.Sugar().Info(iscommandrunning)
+		global.RSPLog.Sugar().Info(iscommandrunning)
 		if iscommandrunning {
 			return
 		}

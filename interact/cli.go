@@ -25,13 +25,13 @@ type CommandFlags struct {
 }
 
 var (
-	commandFlags    = CommandFlags{}
-	cfgFile         string
-	detach          bool
-	syncserver      string
-	Confignotseterr error
-	interact        bool
-	version         bool
+	commandFlags = CommandFlags{}
+	cfgFile      string
+	//detach          bool
+	//syncserver      string
+	//Confignotseterr error
+	interact bool
+	//version  bool
 )
 
 var LivePrefixState struct {
@@ -108,10 +108,10 @@ func getMainCmd(args []string) *cobra.Command {
 	rootCmd := getBasicCmd()
 
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file (default is $HOME/config.yaml)")
-	rootCmd.PersistentFlags().StringVarP(&syncserver, "syncserver", "s", "", "sync server address")
-	rootCmd.Flags().BoolVarP(&detach, "detach", "d", true, "Run pdctl without readline.")
+	//rootCmd.PersistentFlags().StringVarP(&syncserver, "syncserver", "s", "", "sync server address")
+	//rootCmd.Flags().BoolVarP(&detach, "detach", "d", true, "Run pdctl without readline.")
 	rootCmd.Flags().BoolVarP(&interact, "interact", "i", false, "Run pdctl with readline.")
-	rootCmd.Flags().BoolVarP(&version, "version", "V", false, "Print version information and exit.")
+	//rootCmd.Flags().BoolVarP(&version, "version", "V", false, "Print version information and exit.")
 
 	rootCmd.Run = cliRun
 
@@ -167,34 +167,10 @@ func initConfig() {
 	global.RSPViper = core.Viper()
 	global.RSPLog = core.Zap()
 
-	//global.RSPLog = core.Zap()
-
-	//if syncserver == "" {
-	//	fmt.Println(syncserver)
-	//	syncserver = os.Getenv("SYNCSERVER")
-	//}
-	//
-	//if cfgFile != "" && commons.FileExists(cfgFile) {
-	//	// Use config file from the flag.
-	//	viper.SetConfigFile(cfgFile)
-	//} else {
-	//	viper.AddConfigPath(".")
-	//	viper.SetConfigName("config")
-	//}
-	//
-	//viper.ReadInConfig()
-	//
-	//viper.AutomaticEnv() // read in environment variables that match
-	//
-	//if syncserver != "" {
-	//	viper.Set("SYNCSERVER", syncserver)
-	//}
-
 }
 
 func loop() {
 	rl, err := readline.NewEx(&readline.Config{
-
 		Prompt:                 "redissyncer-test> ",
 		HistoryFile:            "/tmp/readline.tmp",
 		AutoComplete:           readLineCompleter,
