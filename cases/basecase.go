@@ -225,14 +225,8 @@ func (tc *TestCase) CheckSyncTaskStatus(taskids []string) {
 
 			if gjson.Get(v, "taskStatus.status").Int() == 7 {
 				if lastKeyAcross.LastKeyAcross.LastKeyCommitTime > 0 {
-					//if gjson.Get(v, "lastDataInPutInterval").Int() > int64(60000) || gjson.Get(v, "lastDataOutPutInterval").Int() < int64(60000) {
-					//	iscommandrunning = true
-					//}
 					//如果当前时间与lastKeyCommitTime相减超过20000毫秒 iscommandrunning = true
 					localUnixTimestamp := time.Now().UnixNano() / 1e6
-
-					global.RSPLog.Sugar().Info(localUnixTimestamp - lastKeyAcross.LastKeyAcross.LastKeyCommitTime)
-
 					if localUnixTimestamp-lastKeyAcross.LastKeyAcross.LastKeyCommitTime > 20000 {
 						iscommandrunning = true
 					}
@@ -252,7 +246,6 @@ func (tc *TestCase) CheckSyncTaskStatus(taskids []string) {
 			}
 
 		}
-		global.RSPLog.Sugar().Info(iscommandrunning)
 		if iscommandrunning {
 			return
 		}
