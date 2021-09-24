@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"strconv"
 	"sync"
+	"testcase/global"
 	"time"
 )
 
@@ -27,7 +28,7 @@ func (gbkv *GenBigKV) GenBigHash() string {
 	gbkv.RedisConn.Expire(key, gbkv.EXPIRE)
 	t2 := time.Now()
 
-	zaplogger.Info("GenBigKV", zap.Int("db", gbkv.DB), zap.String("keytype", "hash"), zap.String("key", key), zap.String("duration", t2.Sub(t1).String()))
+	global.RSPLog.Info("GenBigKV", zap.Int("db", gbkv.DB), zap.String("keytype", "hash"), zap.String("key", key), zap.String("duration", t2.Sub(t1).String()))
 	return key
 }
 
@@ -39,7 +40,7 @@ func (gbkv *GenBigKV) GenBigList() string {
 	}
 	gbkv.RedisConn.Expire(key, gbkv.EXPIRE)
 	t2 := time.Now()
-	zaplogger.Info("GenBigKV", zap.Int("db", gbkv.DB), zap.String("keytype", "list"), zap.String("key", key), zap.String("duration", t2.Sub(t1).String()))
+	global.RSPLog.Info("GenBigKV", zap.Int("db", gbkv.DB), zap.String("keytype", "list"), zap.String("key", key), zap.String("duration", t2.Sub(t1).String()))
 
 	return key
 }
@@ -53,7 +54,7 @@ func (gbkv *GenBigKV) GenBigSet() string {
 
 	gbkv.RedisConn.Expire(key, gbkv.EXPIRE)
 	t2 := time.Now()
-	zaplogger.Info("GenBigKV", zap.Int("db", gbkv.DB), zap.String("keytype", "set"), zap.String("key", key), zap.String("duration", t2.Sub(t1).String()))
+	global.RSPLog.Info("GenBigKV", zap.Int("db", gbkv.DB), zap.String("keytype", "set"), zap.String("key", key), zap.String("duration", t2.Sub(t1).String()))
 	return key
 }
 func (gbkv *GenBigKV) GenBigZset() string {
@@ -68,7 +69,7 @@ func (gbkv *GenBigKV) GenBigZset() string {
 	}
 	gbkv.RedisConn.Expire(key, gbkv.EXPIRE)
 	t2 := time.Now()
-	zaplogger.Info("GenBigKV", zap.Int("db", gbkv.DB), zap.String("keytype", "zset"), zap.String("key", key), zap.String("duration", t2.Sub(t1).String()))
+	global.RSPLog.Info("GenBigKV", zap.Int("db", gbkv.DB), zap.String("keytype", "zset"), zap.String("key", key), zap.String("duration", t2.Sub(t1).String()))
 	return key
 }
 
@@ -79,12 +80,12 @@ func (gbkv *GenBigKV) GenBigString() {
 		gbkv.RedisConn.Set(key+strconv.Itoa(i), gbkv.ValuePrefix+strconv.Itoa(i), gbkv.EXPIRE)
 	}
 	t2 := time.Now()
-	zaplogger.Info("GenBigKV", zap.Int("db", gbkv.DB), zap.String("keytype", "string"), zap.String("keyprefix", key), zap.String("duration", t2.Sub(t1).String()))
+	global.RSPLog.Info("GenBigKV", zap.Int("db", gbkv.DB), zap.String("keytype", "string"), zap.String("keyprefix", key), zap.String("duration", t2.Sub(t1).String()))
 }
 
 func (gbkv *GenBigKV) GenerateBaseDataParallel(client *redis.Client) map[string]string {
 
-	zaplogger.Sugar().Info("Generate Base data Beging...")
+	global.RSPLog.Sugar().Info("Generate Base data Beging...")
 	bigkvmap := make(map[string]string)
 	wg := sync.WaitGroup{}
 
