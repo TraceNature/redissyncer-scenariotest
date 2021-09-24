@@ -1,0 +1,17 @@
+{
+  "sourcePassword": "redistest0102",
+  "sourceRedisAddress": "114.67.76.82:16374",
+  "targetRedisAddress": "114.67.120.120:16374",
+  "targetPassword": "redistest0102",
+  "dbMapper": {
+    "0": 3,
+    "2": 6,
+    "3": 5,
+    "8": 10
+  },
+  "taskName": "single2singlewithdbmap",
+  "targetRedisVersion": 4.0,
+  "autostart": true,
+  "afresh": true,
+  "batchSize": 1000
+}
