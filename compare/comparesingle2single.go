@@ -8,6 +8,7 @@ import (
 	"runtime"
 	"strconv"
 	"sync"
+	"testcase/global"
 	"time"
 )
 
@@ -31,14 +32,14 @@ func (compare *CompareSingle2Single) CompareDB() {
 		threads = compare.CompareThreads
 	}
 	cursor := uint64(0)
-	zaplogger.Sugar().Info("CompareSingle2single DB begin")
+	global.RSPLog.Sugar().Info("CompareSingle2single DB begin")
 	ticker := time.NewTicker(time.Second * 20)
 	defer ticker.Stop()
 
 	pool, err := ants.NewPool(threads)
 
 	if err != nil {
-		zaplogger.Sugar().Error(err)
+		global.RSPLog.Sugar().Error(err)
 		return
 	}
 	defer pool.Release()
@@ -47,7 +48,7 @@ func (compare *CompareSingle2Single) CompareDB() {
 		result, c, err := compare.Source.Scan(cursor, "*", compare.BatchSize).Result()
 		
 		if err != nil {
-			zaplogger.Sugar().Info(result, c, err)
+			global.RSPLog.Sugar().Info(result, c, err)
 			return
 		}
 
@@ -70,13 +71,13 @@ func (compare *CompareSingle2Single) CompareDB() {
 
 		select {
 		case <-ticker.C:
-			zaplogger.Sugar().Info("Comparing...")
+			global.RSPLog.Sugar().Info("Comparing...")
 		default:
 			continue
 		}
 	}
 	wg.Wait()
-	zaplogger.Sugar().Info("CompareSingle2single End")
+	global.RSPLog.Sugar().Info("CompareSingle2single End")
 }
 
 func (compare *CompareSingle2Single) CompareKeys(keys []string) {
@@ -84,7 +85,7 @@ func (compare *CompareSingle2Single) CompareKeys(keys []string) {
 	for _, v := range keys {
 		keytype, err := compare.Source.Type(v).Result()
 		if err != nil {
-			zaplogger.Sugar().Error(err)
+			global.RSPLog.Sugar().Error(err)
 			continue
 		}
 		result = nil
@@ -100,11 +101,11 @@ func (compare *CompareSingle2Single) CompareKeys(keys []string) {
 		case keytype == "hash":
 			result = compare.CompareHash(v)
 		default:
-			zaplogger.Info("No type find in compare list", zap.String("key", v), zap.String("type", keytype))
+			global.RSPLog.Info("No type find in compare list", zap.String("key", v), zap.String("type", keytype))
 		}
 
 		if result != nil && !result.IsEqual {
-			zaplogger.Info("", zap.Any("CompareResult", result))
+			global.RSPLog.Info("", zap.Any("CompareResult", result))
 		}
 	}
 }
