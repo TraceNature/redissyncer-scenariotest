@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	jsoniter "github.com/json-iterator/go"
 	"github.com/tidwall/gjson"
 	"go.uber.org/zap"
 	"io/ioutil"
@@ -14,18 +15,18 @@ import (
 	//"testcase/globalzap"
 	"testcase/model/response"
 	"time"
-	jsoniter "github.com/json-iterator/go"
 )
 
 var logger = global.RSPLog
 
-const CreateTaskPath = "/api/task/create"
-const StartTaskPath = "/api/task/start"
-const StopTaskPath = "/api/task/stop"
-const RemoveTaskPath = "/api/task/remove"
-const ListTasksPath = "/api/task/listtasks"
-const TaskListByIDs = "/api/task/listbyids"
-const TaskListByName = "/api/task/listbynames"
+const CreateTaskPath = "/api/v2/createtask"
+const StartTaskPath = "/api/v2/starttask"
+const StopTaskPath = "/api/v2/stoptask"
+const RemoveTaskPath = "/api/v2/removetask"
+const ListTasksPath = "/api/v2/listtasks"
+
+//const TaskListByIDs = "/api/task/listbyids"
+//const TaskListByName = "/api/task/listbynames"
 const LastKeyAcross = "/api/task/lastkeyacross"
 const ImportFilePath = "/api/v2/file/createtask"
 
@@ -209,8 +210,8 @@ func RemoveTaskByName(syncserver string, taskname string) {
 func GetTaskStatus(syncserver string, ids []string) (map[string]string, error) {
 	jsonmap := make(map[string]interface{})
 
-	//jsonmap["regulation"] = "byids"
-	jsonmap["taskIDs"] = ids
+	jsonmap["regulation"] = "byids"
+	//jsonmap["taskIDs"] = ids
 
 	listtaskjsonStr, err := json.Marshal(jsonmap)
 	if err != nil {
@@ -218,7 +219,7 @@ func GetTaskStatus(syncserver string, ids []string) (map[string]string, error) {
 	}
 	listreq := &Request{
 		Server: syncserver,
-		Api:    TaskListByIDs,
+		Api:    ListTasksPath,
 		Body:   string(listtaskjsonStr),
 	}
 	listresp := listreq.ExecRequest()
@@ -250,7 +251,7 @@ func GetSameTaskNameIDs(syncserver string, taskname string) ([]string, error) {
 
 	existstaskids := []string{}
 	listjsonmap := make(map[string]interface{})
-	//listjsonmap["regulation"] = "bynames"
+	listjsonmap["regulation"] = "bynames"
 	listjsonmap["taskNames"] = strings.Split(taskname, ",")
 	listjsonStr, err := json.Marshal(listjsonmap)
 	if err != nil {
@@ -259,7 +260,7 @@ func GetSameTaskNameIDs(syncserver string, taskname string) ([]string, error) {
 	}
 	listtaskreq := &Request{
 		Server: syncserver,
-		Api:    TaskListByName,
+		Api:    ListTasksPath,
 		Body:   string(listjsonStr),
 	}
 
