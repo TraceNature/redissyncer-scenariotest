@@ -17,8 +17,6 @@ import (
 	"time"
 )
 
-var logger = global.RSPLog
-
 const CreateTaskPath = "/api/v2/createtask"
 const StartTaskPath = "/api/v2/starttask"
 const StopTaskPath = "/api/v2/stoptask"
@@ -37,6 +35,7 @@ type Request struct {
 }
 
 func (r Request) ExecRequest() (result string) {
+
 	client := &http.Client{}
 	//req, err := http.NewRequest("POST", r.Server+r.Api, strings.NewReader(r.Body))
 	//
@@ -49,16 +48,17 @@ func (r Request) ExecRequest() (result string) {
 	//resp, err := client.Do(req)
 
 	resp, err := client.Post(r.Server+r.Api, "application/json", strings.NewReader(r.Body))
+	global.RSPLog.Info(r.Server + r.Api)
 
 	if err != nil {
-		logger.Sugar().Error(err)
+		global.RSPLog.Sugar().Error(err)
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		//logger.Sugar().Error(err)
-		logger.Sugar().Error(err)
+		global.RSPLog.Sugar().Error(err)
 		os.Exit(1)
 	}
 
@@ -85,7 +85,7 @@ func Import(syncserver string, createjson string) []string {
 	taskids := gjson.Get(resp, "data").Array()
 
 	if len(taskids) == 0 {
-		logger.Error("task create faile", zap.Any("response_info", resp))
+		global.RSPLog.Error("task create faile", zap.Any("response_info", resp))
 		os.Exit(1)
 	}
 	taskidsstrarray := []string{}
@@ -111,7 +111,7 @@ func CreateTask(syncserver string, createjson string) []string {
 	taskids := gjson.Get(resp, "data").Array()
 	fmt.Println(resp)
 	if len(taskids) == 0 {
-		logger.Sugar().Error(errors.New("task create faile \n"), resp)
+		global.RSPLog.Sugar().Error(errors.New("task create faile \n"), resp)
 		//logger.Sugar().Info(resp)
 		os.Exit(1)
 	}
@@ -131,7 +131,7 @@ func StartTask(syncserver string, taskid string) {
 	jsonmap["taskid"] = taskid
 	startjson, err := json.Marshal(jsonmap)
 	if err != nil {
-		logger.Sugar().Error(err)
+		global.RSPLog.Sugar().Error(err)
 		os.Exit(1)
 	}
 	startreq := &Request{
@@ -150,7 +150,7 @@ func StopTaskByIds(syncserver string, taskId string) {
 	jsonmap["taskId"] = taskId
 	stopjsonStr, err := json.Marshal(jsonmap)
 	if err != nil {
-		logger.Sugar().Error(err)
+		global.RSPLog.Sugar().Error(err)
 		os.Exit(1)
 	}
 	stopreq := &Request{
@@ -165,11 +165,12 @@ func StopTaskByIds(syncserver string, taskId string) {
 
 //Remove task by name
 func RemoveTaskByName(syncserver string, taskname string) {
+
 	jsonmap := make(map[string]interface{})
 
 	taskids, err := GetSameTaskNameIDs(syncserver, taskname)
 	if err != nil {
-		logger.Sugar().Error(err)
+		global.RSPLog.Sugar().Error(err)
 		os.Exit(1)
 	}
 
@@ -181,7 +182,7 @@ func RemoveTaskByName(syncserver string, taskname string) {
 		jsonmap["taskId"] = id
 		stopjsonStr, err := json.Marshal(jsonmap)
 		if err != nil {
-			logger.Sugar().Error(err)
+			global.RSPLog.Sugar().Error(err)
 			os.Exit(1)
 		}
 		stopreq := &Request{
@@ -254,8 +255,9 @@ func GetSameTaskNameIDs(syncserver string, taskname string) ([]string, error) {
 	listjsonmap["regulation"] = "bynames"
 	listjsonmap["taskNames"] = strings.Split(taskname, ",")
 	listjsonStr, err := json.Marshal(listjsonmap)
+
 	if err != nil {
-		logger.Info(err.Error())
+		global.RSPLog.Sugar().Info(err.Error())
 		return nil, err
 	}
 	listtaskreq := &Request{
@@ -265,6 +267,7 @@ func GetSameTaskNameIDs(syncserver string, taskname string) ([]string, error) {
 	}
 
 	listresp := listtaskreq.ExecRequest()
+
 	tasklist := gjson.Get(listresp, "result").Array()
 
 	if len(tasklist) > 0 {
@@ -283,7 +286,7 @@ func GetLastKeyAcross(syncserver string, taskID string) (response.LastKeyAcrossR
 	reqJson["taskId"] = taskID
 	jsonStr, err := json.Marshal(reqJson)
 	if err != nil {
-		logger.Info(err.Error())
+		global.RSPLog.Info(err.Error())
 		return result, err
 	}
 	req := &Request{

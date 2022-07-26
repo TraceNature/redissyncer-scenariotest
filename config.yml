@@ -1,4 +1,4 @@
-syncserver: "http://dev:8888"
+syncserver: "http://dev:8080"
 zap:
   level: 'debug'
   format: 'console'
@@ -7,5 +7,5 @@ zap:
   link-name: 'latest_log'
   show-line: true
   encode-level: 'LowercaseColorLevelEncoder'
-#  stacktrace-key: 'stacktrace'
+  #  stacktrace-key: 'stacktrace'
   log-in-console: true

@@ -85,6 +85,7 @@ func getBasicCmd() *cobra.Command {
 		cmd.NewExecCommand(),
 		cmd.NewGenDataCommand(),
 		cmd.NewCaseListCommand(),
+		cmd.NewGenCaseTemplateCmd(),
 	)
 
 	rootCmd.Flags().ParseErrorsWhitelist.UnknownFlags = true
@@ -107,12 +108,8 @@ func getInteractCmd(args []string) *cobra.Command {
 
 func getMainCmd(args []string) *cobra.Command {
 	rootCmd := getBasicCmd()
-
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config file (default is $HOME/config.yaml)")
-	//rootCmd.PersistentFlags().StringVarP(&syncserver, "syncserver", "s", "", "sync server address")
-	//rootCmd.Flags().BoolVarP(&detach, "detach", "d", true, "Run pdctl without readline.")
 	rootCmd.Flags().BoolVarP(&interact, "interact", "i", false, "Run pdctl with readline.")
-	//rootCmd.Flags().BoolVarP(&version, "version", "V", false, "Print version information and exit.")
 
 	rootCmd.Run = cliRun
 
@@ -137,7 +134,7 @@ func MainStart(args []string) {
 	startCmd(getMainCmd, args)
 }
 
-// Start start interact command
+// Start interact command
 func Start(args []string) {
 	startCmd(getInteractCmd, args)
 }

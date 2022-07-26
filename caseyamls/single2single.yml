@@ -1,5 +1,5 @@
 # redissyncer 地址
-syncserver: "http://dev:8888"
+syncserver: "http://dev:8080"
 # 任务创建json
 createtaskfile: "./tasks/single2single.json"
 # 生成增量数据持续多长时间，单位为秒

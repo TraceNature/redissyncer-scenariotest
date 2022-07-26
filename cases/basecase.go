@@ -3,7 +3,7 @@ package cases
 import (
 	"github.com/tidwall/gjson"
 	"go.uber.org/zap"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 	"io/ioutil"
 	"os"
 	"runtime"
@@ -204,7 +204,7 @@ func (tc *TestCase) CheckSyncTaskStatus(taskids []string) {
 		}
 
 		for k, v := range statusmap {
-		
+
 			lastKeyAcross, err := synctaskhandle.GetLastKeyAcross(tc.SyncServer, k)
 			if err != nil {
 				global.RSPLog.Sugar().Error(err)

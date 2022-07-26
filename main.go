@@ -25,7 +25,6 @@ import (
 	"testcase/interact"
 )
 
-
 func main() {
 
 	//fmt.Println(global.RSPViper)
