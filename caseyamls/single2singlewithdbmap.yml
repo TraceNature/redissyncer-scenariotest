@@ -1,4 +1,4 @@
-syncserver: "http://dev:8888"
+syncserver: "http://dev:8080"
 createtaskfile: "./tasks/single2singlewithdbmap.json"
 gendataduration: 60
 datageninterval: 30

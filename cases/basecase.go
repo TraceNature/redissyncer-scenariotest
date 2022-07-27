@@ -93,7 +93,7 @@ type TestCase struct {
 
 func NewTestCase() TestCase {
 	tc := TestCase{
-		SyncServer:              "127.0.0.1:8080",
+		SyncServer:              "http://127.0.0.1:8080",
 		GenDataDuration:         60,
 		DataGenInterval:         int64(300),
 		GenDataThreads:          runtime.NumCPU(),
@@ -147,6 +147,17 @@ func (tc *TestCase) Exec() {
 
 }
 
+// 判断redissyncer server 是否可用
+func (tc *TestCase) SyncerServerAlive() bool {
+	return synctaskhandle.SyncerServerAlive(tc.SyncServer)
+}
+
+// 生成 yaml string
+func (tc *TestCase) ToYamlString() (string, error) {
+	yml, err := yaml.Marshal(tc)
+	return string(yml), err
+}
+
 //解析yaml文件获取testcase
 func (tc *TestCase) ParseYamlFile(filepath string) error {
 	yamlFile, err := ioutil.ReadFile(filepath)
@@ -176,7 +187,6 @@ func (tc *TestCase) ParseJsonFile(casefile string) []byte {
 
 	jsonbytes, err := ioutil.ReadAll(jsonFile)
 	if err != nil {
-		//logger.Println(err)
 		global.RSPLog.Info(err.Error())
 		os.Exit(1)
 	}
@@ -220,8 +230,6 @@ func (tc *TestCase) CheckSyncTaskStatus(taskids []string) {
 				//time.Sleep(60 * time.Second)
 				iscommandrunning = true
 			}
-
-			global.RSPLog.Sugar().Info(v)
 
 			if gjson.Get(v, "taskStatus.status").Int() == 7 {
 				if lastKeyAcross.LastKeyAcross.LastKeyCommitTime > 0 {

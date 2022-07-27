@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
+	"testcase/cases"
 )
 
 func NewGenCaseTemplateCmd() *cobra.Command {
@@ -31,12 +32,19 @@ func GenCaseSingle2Single() *cobra.Command {
 }
 
 func genCaseSingle2SingleFunc(cmd *cobra.Command, args []string) {
+
+	testCase := cases.NewTestCase()
+	tc, err := testCase.ToYamlString()
+	if err != nil {
+		cmd.PrintErrln(err)
+	}
+
 	if len(args) == 0 {
 		//cmd.PrintErrln("Please input test yaml file path")
 		//return
 	}
 
-	cmd.Println("genCaseSingle2SingleFunc")
+	cmd.Println(tc)
 
 }
 

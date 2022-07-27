@@ -6,10 +6,11 @@ import (
 	"strings"
 	"testcase/cases"
 	"testcase/commons"
+	"testcase/global"
 )
 
 func NewExecCommand() *cobra.Command {
-	exec:= &cobra.Command{
+	exec := &cobra.Command{
 		Use:   "exec <subcommand>",
 		Short: "Execute scenario test",
 	}
@@ -51,21 +52,21 @@ func execTestCaseFromFileFunc(cmd *cobra.Command, args []string) {
 
 		//判断文件格式
 		yml := strings.HasSuffix(v, ".yml")
-		yaml:=strings.HasSuffix(v, ".yaml")
-		if !yml && !yaml{
+		yaml := strings.HasSuffix(v, ".yaml")
+		if !yml && !yaml {
 			cmd.PrintErrf("file %s not a yml or yaml file \n", v)
 			continue
 		}
 
 		tc := cases.NewTestCase()
-		if err:=tc.ParseYamlFile(v);err!=nil{
+		if err := tc.ParseYamlFile(v); err != nil {
 			cmd.PrintErrln(err)
 		}
-		fmt.Println(tc)
+		global.RSPLog.Sugar().Info(tc)
+
 		tc.Exec()
 	}
 }
-
 
 func execTestCaseFromDirectoryFunc(cmd *cobra.Command, args []string) {
 	if len(args) != 1 {

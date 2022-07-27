@@ -13,5 +13,5 @@
   "targetRedisVersion": 4.0,
   "autostart": true,
   "afresh": true,
-  "batchSize": 1000
+  "batchSize": 100
 }

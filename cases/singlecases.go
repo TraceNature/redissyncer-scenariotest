@@ -65,6 +65,10 @@ func (tc *TestCase) Single2Single() {
 	}
 
 	//check redissycner-server 是否可用
+	if !tc.SyncerServerAlive() {
+		global.RSPLog.Sugar().Error(errors.New("redissyncer server not alive!"))
+		return
+	}
 
 	//清理redis
 	sclient.FlushAll()
@@ -195,6 +199,13 @@ func (tc TestCase) Single2SingleWithDBMap() {
 	}
 
 	//check redissycner-server 是否可用
+	if !tc.SyncerServerAlive() {
+		global.RSPLog.Sugar().Error(errors.New("redissyncer server not alive!"))
+		return
+	}
+
+	// 清理redissyncer上所有任务
+	synctaskhandle.SyncerServerClean(tc.SyncServer)
 
 	//清理redis
 	sclient.FlushAll()
